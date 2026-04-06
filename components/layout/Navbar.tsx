@@ -187,7 +187,7 @@ export function Navbar() {
             />
           ) : (
             <Button 
-              className="cursor-target bg-primary text-white hover:bg-[#ff3d3d] hover:text-white hover:shadow-[0_0_30px_-7px_rgba(255,42,42,0.95)] rounded-xl px-6 py-5 font-semibold text-sm shadow-[0_10px_24px_-14px_rgba(255,42,42,0.95)]" 
+              className="cursor-target !border !border-[#ff2a2a]/50 !bg-[#ff2a2a] !text-white hover:!border-[#ff3d3d] hover:!bg-[#ff3d3d] hover:!text-white hover:shadow-[0_0_30px_-7px_rgba(255,42,42,0.95)] rounded-xl px-6 py-5 font-semibold text-sm shadow-[0_10px_24px_-14px_rgba(255,42,42,0.95)]" 
               onClick={() => setIsLoginOpen(true)}
             >
               <LogIn className="mr-2 h-4 w-4" />
