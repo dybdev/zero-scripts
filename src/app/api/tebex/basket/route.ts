@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
 import { getRequestIpv4 } from "@/lib/request-ip";
 import { getCatalogueAdapter } from "@/lib/tebex/client";
 import { basketRequestSchema } from "@/lib/tebex/schemas";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const parsed = basketRequestSchema.safeParse(await request.json());
   if (!parsed.success) {
     return NextResponse.json(
@@ -29,22 +29,83 @@ export async function POST(request: Request) {
     let basket;
 
     if (input.action === "create") {
-      stage = "creating the Tebex basket";
-      basket = await adapter.createBasket({
-        completeUrl: `${env.NEXT_PUBLIC_SITE_URL}/?checkout=complete`,
-        cancelUrl: `${env.NEXT_PUBLIC_SITE_URL}/store?checkout=cancelled`,
-        ipAddress: getRequestIpv4(request),
-      });
+      let basketId = request.cookies.get("zero_tebex_basket")?.value;
+      const provider =
+        request.cookies.get("zero_auth_provider")?.value === "discord"
+          ? "discord"
+          : "cfx";
+
+      if (!basketId) {
+        stage = "creating the Tebex basket";
+        basket = await adapter.createBasket({
+          completeUrl: `${env.NEXT_PUBLIC_SITE_URL}/?checkout=complete`,
+          cancelUrl: `${env.NEXT_PUBLIC_SITE_URL}/store?checkout=cancelled`,
+          ipAddress: getRequestIpv4(request),
+        });
+        basketId = basket.ident;
+      }
+
+      stage = "checking buyer authentication";
+      const buyer = await adapter.getBuyerIdentity(basketId, provider);
+      if (!buyer) {
+        stage = "preparing buyer authentication";
+        const returnUrl = `${env.NEXT_PUBLIC_SITE_URL}/store?authenticated=true&checkout=resume`;
+        const links = await adapter.getAuthenticationLinks(
+          basketId,
+          returnUrl,
+        );
+        const preferred =
+          links.find((link) => /fivem|cfx/i.test(link.name)) ??
+          links.find((link) => /discord/i.test(link.name)) ??
+          links[0];
+
+        if (!preferred) {
+          return NextResponse.json(
+            {
+              message:
+                "No Cfx or Discord authentication provider is enabled for this Tebex store.",
+            },
+            { status: 422 },
+          );
+        }
+
+        const response = NextResponse.json({
+          requiresAuthentication: true,
+          provider: preferred.name,
+          authUrl: preferred.url,
+          message: `Continue with ${preferred.name} before checkout.`,
+        });
+        response.cookies.set("zero_tebex_basket", basketId, {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+          maxAge: 60 * 60,
+        });
+        response.cookies.set(
+          "zero_auth_provider",
+          /discord/i.test(preferred.name) ? "discord" : "cfx",
+          {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
+            path: "/",
+            maxAge: 60 * 60,
+          },
+        );
+        return response;
+      }
+
       for (const item of input.items) {
         stage = `adding package ${item.packageId}`;
         basket = await adapter.addPackage(
-          basket.ident,
+          basketId,
           item.packageId,
           item.quantity,
         );
       }
       stage = "retrieving the checkout link";
-      basket = await adapter.getCheckout(basket.ident);
+      basket = await adapter.getCheckout(basketId);
     } else if (input.action === "add") {
       stage = `adding package ${input.packageId}`;
       basket = await adapter.addPackage(

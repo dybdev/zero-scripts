@@ -23,6 +23,9 @@ import { QuantityControl } from "./quantity-control";
 
 interface CheckoutResponse {
   checkoutUrl?: string;
+  authUrl?: string;
+  requiresAuthentication?: boolean;
+  provider?: string;
   message?: string;
 }
 
@@ -72,6 +75,13 @@ export function BasketDrawer() {
       return body;
     },
     onSuccess: (data) => {
+      if (data.requiresAuthentication && data.authUrl) {
+        toast.info(data.message ?? "Sign in is required before checkout.", {
+          toastId: "checkout-auth",
+        });
+        window.location.assign(data.authUrl);
+        return;
+      }
       if (data.checkoutUrl) {
         window.location.assign(data.checkoutUrl);
       } else {
