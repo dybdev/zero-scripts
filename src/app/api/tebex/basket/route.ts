@@ -121,6 +121,9 @@ export async function POST(request: NextRequest) {
           basketId,
           item.packageId,
           item.quantity,
+          buyer.usernameId
+            ? { username_id: buyer.usernameId }
+            : undefined,
         );
       }
       stage = "retrieving the checkout link";

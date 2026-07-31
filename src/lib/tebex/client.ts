@@ -110,7 +110,7 @@ class TebexAdapter implements CatalogueAdapter {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          ...(this.privateKey
+          ...(this.privateKey && accountScoped
             ? {
                 Authorization: `Basic ${Buffer.from(
                   `${this.token}:${this.privateKey}`,
@@ -259,19 +259,31 @@ class TebexAdapter implements CatalogueAdapter {
     const basket = raw as Record<string, unknown>;
     const displayName =
       typeof basket.username === "string" ? basket.username.trim() : "";
-    return displayName ? { displayName, provider } : null;
+    const usernameId =
+      typeof basket.username_id === "string" ||
+      typeof basket.username_id === "number"
+        ? String(basket.username_id)
+        : undefined;
+    return displayName ? { displayName, provider, usernameId } : null;
   }
 
   async addPackage(
     basketId: string,
     packageId: string,
     quantity = 1,
+    variableData?: Record<string, string>,
   ): Promise<TebexBasket> {
     const raw = await this.request(
       `/baskets/${basketId}/packages`,
       {
         method: "POST",
-        body: JSON.stringify({ package_id: packageId, quantity }),
+        body: JSON.stringify({
+          package_id: packageId,
+          quantity,
+          ...(variableData && Object.keys(variableData).length
+            ? { variable_data: variableData }
+            : {}),
+        }),
       },
       false,
     );

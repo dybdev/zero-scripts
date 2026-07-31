@@ -70,6 +70,7 @@ export interface AuthenticationLink {
 export interface BuyerIdentity {
   displayName: string;
   provider: "cfx" | "discord";
+  usernameId?: string;
 }
 
 export interface CatalogueAdapter {
@@ -90,6 +91,7 @@ export interface CatalogueAdapter {
     basketId: string,
     packageId: string,
     quantity?: number,
+    variableData?: Record<string, string>,
   ): Promise<TebexBasket>;
   removePackage(
     basketId: string,
