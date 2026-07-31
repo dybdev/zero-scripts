@@ -5,6 +5,25 @@ import { getRequestIpv4 } from "@/lib/request-ip";
 import { getCatalogueAdapter } from "@/lib/tebex/client";
 import { basketRequestSchema } from "@/lib/tebex/schemas";
 
+function getSafeUpstreamDetail(error: unknown) {
+  if (!(error instanceof Error)) return undefined;
+  const jsonStart = error.message.indexOf("{");
+  if (jsonStart === -1) return undefined;
+
+  try {
+    const body = JSON.parse(error.message.slice(jsonStart)) as Record<
+      string,
+      unknown
+    >;
+    const detail = [body.detail, body.message, body.title, body.error].find(
+      (value) => typeof value === "string" && value.trim(),
+    );
+    return typeof detail === "string" ? detail.slice(0, 240) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function POST(request: NextRequest) {
   const parsed = basketRequestSchema.safeParse(await request.json());
   if (!parsed.success) {
@@ -147,11 +166,15 @@ export async function POST(request: NextRequest) {
         : status
           ? `Tebex responded with HTTP ${status}.`
           : "The server could not process Tebex's response.";
+    const upstreamDetail = getSafeUpstreamDetail(error);
     return NextResponse.json(
       {
-        message: `Checkout failed while ${stage}. ${reason}`,
+        message: `Checkout failed while ${stage}. ${reason}${
+          upstreamDetail ? ` ${upstreamDetail}` : ""
+        }`,
         stage,
         upstreamStatus: status ? Number(status) : undefined,
+        upstreamDetail,
       },
       { status: 502 },
     );
