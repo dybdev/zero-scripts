@@ -27,7 +27,7 @@ export function AddToBasketButton({
   const add = () => {
     if (!authenticated) {
       requestSignIn();
-      toast.info("Sign in with Cfx before adding products to your bag.", {
+      toast.info("Sign in with Discord before adding products to your bag.", {
         toastId: "basket-auth-required",
       });
       return;

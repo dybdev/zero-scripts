@@ -25,8 +25,8 @@ export async function POST(request: Request) {
     });
     const links = await adapter.getAuthenticationLinks(basket.ident, returnUrl);
     const preferred =
-      links.find((link) => /fivem|cfx/i.test(link.name)) ??
       links.find((link) => /discord/i.test(link.name)) ??
+      links.find((link) => /fivem|cfx/i.test(link.name)) ??
       links[0];
 
     if (!preferred) {

@@ -88,8 +88,8 @@ export function SignInModal({
                 Sign in to Zero Scripts
               </h2>
               <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[var(--neutral-400)]">
-                Connect through the secure Tebex identity flow to access your
-                purchases and buyer account.
+                Connect Discord through Tebex to access your purchases and
+                buyer account.
               </p>
             </div>
             <button
@@ -115,7 +115,7 @@ export function SignInModal({
                 strokeWidth={2}
                 className="text-[var(--brand-red-light)]"
               />
-              Cfx and Discord identity are verified through Tebex.
+              Your Discord identity is securely verified through Tebex.
             </p>
           </motion.section>
         </>

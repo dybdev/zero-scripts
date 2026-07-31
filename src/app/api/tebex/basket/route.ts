@@ -49,10 +49,8 @@ export async function POST(request: NextRequest) {
 
     if (input.action === "create") {
       let basketId = request.cookies.get("zero_tebex_basket")?.value;
-      const provider =
-        request.cookies.get("zero_auth_provider")?.value === "discord"
-          ? "discord"
-          : "cfx";
+      const storedProvider = request.cookies.get("zero_auth_provider")?.value;
+      const provider = "discord" as const;
 
       if (!basketId) {
         stage = "creating the Tebex basket";
@@ -65,7 +63,10 @@ export async function POST(request: NextRequest) {
       }
 
       stage = "checking buyer authentication";
-      const buyer = await adapter.getBuyerIdentity(basketId, provider);
+      const buyer =
+        storedProvider === provider
+          ? await adapter.getBuyerIdentity(basketId, provider)
+          : null;
       if (!buyer) {
         stage = "preparing buyer authentication";
         const returnUrl = `${env.NEXT_PUBLIC_SITE_URL}/store?authenticated=true&checkout=resume`;
@@ -74,8 +75,8 @@ export async function POST(request: NextRequest) {
           returnUrl,
         );
         const preferred =
-          links.find((link) => /fivem|cfx/i.test(link.name)) ??
           links.find((link) => /discord/i.test(link.name)) ??
+          links.find((link) => /fivem|cfx/i.test(link.name)) ??
           links[0];
 
         if (!preferred) {
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest) {
           item.packageId,
           item.quantity,
           buyer.usernameId
-            ? { username_id: buyer.usernameId }
+            ? { discord_id: buyer.usernameId }
             : undefined,
         );
       }
