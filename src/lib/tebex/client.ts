@@ -85,10 +85,12 @@ function toBasket(value: unknown): TebexBasket {
 
 class TebexAdapter implements CatalogueAdapter {
   private readonly token: string;
+  private readonly privateKey?: string;
   private readonly baseUrl: string;
 
   constructor(token: string) {
     this.token = token;
+    this.privateKey = env.TEBEX_PRIVATE_KEY;
     this.baseUrl = env.TEBEX_API_BASE_URL.replace(/\/$/, "");
   }
 
@@ -105,6 +107,13 @@ class TebexAdapter implements CatalogueAdapter {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          ...(this.privateKey
+            ? {
+                Authorization: `Basic ${Buffer.from(
+                  `${this.token}:${this.privateKey}`,
+                ).toString("base64")}`,
+              }
+            : {}),
           ...init?.headers,
         },
         next:
@@ -115,7 +124,12 @@ class TebexAdapter implements CatalogueAdapter {
     );
 
     if (!response.ok) {
-      throw new Error(`Tebex request failed with status ${response.status}`);
+      const details = await response.text();
+      throw new Error(
+        `Tebex request failed with status ${response.status}${
+          details ? `: ${details.slice(0, 500)}` : ""
+        }`,
+      );
     }
 
     const json: unknown = await response.json();

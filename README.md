@@ -31,11 +31,12 @@ pnpm build
 
 1. Set `TEBEX_DATA_SOURCE=tebex`.
 2. Set the server-only `TEBEX_WEBSTORE_TOKEN`.
-3. Set `NEXT_PUBLIC_SITE_URL` to the canonical public origin.
-4. Review the raw Tebex catalogue mapping in
+3. Set the server-only `TEBEX_PRIVATE_KEY` for authenticated basket requests.
+4. Set `NEXT_PUBLIC_SITE_URL` to the canonical public origin.
+5. Review the raw Tebex catalogue mapping in
    `src/lib/tebex/client.ts` against your live package fields, category
    structure, and image host.
-5. Configure the official community/support URLs in the footer and support
+6. Configure the official community/support URLs in the footer and support
    page before launch.
 
 The browser never receives the Tebex token. Catalogue reads occur through the
