@@ -21,42 +21,52 @@ export async function POST(request: Request) {
     });
   }
 
+  let stage = "creating the basket";
+
   try {
     const adapter = getCatalogueAdapter();
     const input = parsed.data;
     let basket;
 
     if (input.action === "create") {
+      stage = "creating the Tebex basket";
       basket = await adapter.createBasket({
         completeUrl: `${env.NEXT_PUBLIC_SITE_URL}/?checkout=complete`,
         cancelUrl: `${env.NEXT_PUBLIC_SITE_URL}/store?checkout=cancelled`,
         ipAddress: getRequestIpv4(request),
       });
       for (const item of input.items) {
+        stage = `adding package ${item.packageId}`;
         basket = await adapter.addPackage(
           basket.ident,
           item.packageId,
           item.quantity,
         );
       }
+      stage = "retrieving the checkout link";
       basket = await adapter.getCheckout(basket.ident);
     } else if (input.action === "add") {
+      stage = `adding package ${input.packageId}`;
       basket = await adapter.addPackage(
         input.basketId,
         input.packageId,
         input.quantity,
       );
     } else if (input.action === "remove") {
+      stage = `removing package ${input.packageId}`;
       basket = await adapter.removePackage(
         input.basketId,
         input.packageId,
         input.quantity,
       );
     } else if (input.action === "coupon") {
+      stage = "applying the coupon";
       basket = await adapter.applyCoupon(input.basketId, input.code);
     } else if (input.action === "creator-code") {
+      stage = "applying the creator code";
       basket = await adapter.applyCreatorCode(input.basketId, input.code);
     } else {
+      stage = "retrieving the checkout link";
       basket = await adapter.getCheckout(input.basketId);
     }
 
@@ -66,10 +76,21 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Tebex basket request failed", error);
+    const status =
+      error instanceof Error
+        ? error.message.match(/status\s+(\d{3})/i)?.[1]
+        : undefined;
+    const reason =
+      error instanceof Error && error.name === "ZodError"
+        ? "Tebex returned an unexpected basket response."
+        : status
+          ? `Tebex responded with HTTP ${status}.`
+          : "The server could not process Tebex's response.";
     return NextResponse.json(
       {
-        message:
-          "Tebex could not prepare checkout. Please try again in a moment.",
+        message: `Checkout failed while ${stage}. ${reason}`,
+        stage,
+        upstreamStatus: status ? Number(status) : undefined,
       },
       { status: 502 },
     );
