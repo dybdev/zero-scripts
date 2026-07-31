@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { Poppins } from "next/font/google";
 
 import { BasketDrawer } from "@/components/basket/basket-drawer";
+import { AuthProvider } from "@/components/account/auth-provider";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ToastProvider } from "@/components/ui/toast-provider";
@@ -89,12 +90,14 @@ export default async function RootLayout({
     <html lang="en" className={poppins.variable}>
       <body>
         <QueryProvider>
-          <SmoothScroll />
-          <SiteHeader buyer={buyer} />
-          <main>{children}</main>
-          <SiteFooter />
-          <BasketDrawer />
-          <ToastProvider />
+          <AuthProvider authenticated={Boolean(buyer)}>
+            <SmoothScroll />
+            <SiteHeader buyer={buyer} />
+            <main>{children}</main>
+            <SiteFooter />
+            <BasketDrawer />
+            <ToastProvider />
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>

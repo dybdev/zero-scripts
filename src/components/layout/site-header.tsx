@@ -14,7 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { BuyerIdentity } from "@/lib/tebex/types";
 
-import { SignInModal } from "../account/sign-in-modal";
+import { useBuyerAuth } from "../account/auth-provider";
 import { ZeroLogo } from "../brand/zero-logo";
 import { BasketButton } from "../basket/basket-button";
 import { MobileNavigation } from "./mobile-navigation";
@@ -31,9 +31,9 @@ const currencies = ["USD", "EUR", "GBP", "CAD"] as const;
 export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { requestSignIn } = useBuyerAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [signInOpen, setSignInOpen] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [currency, setCurrency] = useState<(typeof currencies)[number]>("USD");
@@ -233,7 +233,7 @@ export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
                 type="button"
                 className="header-action header-surface button-solid-red"
                 aria-label="Sign in"
-                onClick={() => setSignInOpen(true)}
+                onClick={requestSignIn}
               >
                 <LogIn size={19} strokeWidth={2.2} />
                 <span className="hidden text-sm font-semibold sm:inline">
@@ -249,7 +249,6 @@ export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
       />
-      <SignInModal open={signInOpen} onClose={() => setSignInOpen(false)} />
     </>
   );
 }

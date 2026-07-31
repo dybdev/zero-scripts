@@ -4,6 +4,7 @@ import { Check, Plus, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+import { useBuyerAuth } from "@/components/account/auth-provider";
 import type { Product } from "@/lib/tebex/types";
 import { cn } from "@/lib/utils";
 import { useBasketStore } from "@/stores/basket-store";
@@ -20,9 +21,17 @@ export function AddToBasketButton({
   className?: string;
 }) {
   const addItem = useBasketStore((state) => state.addItem);
+  const { authenticated, requestSignIn } = useBuyerAuth();
   const [added, setAdded] = useState(false);
 
   const add = () => {
+    if (!authenticated) {
+      requestSignIn();
+      toast.info("Sign in with Cfx before adding products to your bag.", {
+        toastId: "basket-auth-required",
+      });
+      return;
+    }
     addItem(product);
     setAdded(true);
     toast.success(`${product.name} added to your basket.`, {
