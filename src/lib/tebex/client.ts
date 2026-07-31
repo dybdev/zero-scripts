@@ -73,13 +73,16 @@ function toBasket(value: unknown): TebexBasket {
     currency: raw.currency,
     total: raw.total_price,
     checkoutUrl: raw.links?.checkout ?? undefined,
-    lines: raw.packages.map((line) => ({
-      id: line.id,
-      packageId: line.id,
-      name: line.name,
-      quantity: line.quantity,
-      price: line.price,
-    })),
+    lines: raw.packages.map((line, index) => {
+      const packageId = line.id ?? line.package_id ?? String(index);
+      return {
+        id: packageId,
+        packageId,
+        name: line.name,
+        quantity: line.quantity ?? line.qty ?? 1,
+        price: line.price ?? line.base_price ?? 0,
+      };
+    }),
   };
 }
 

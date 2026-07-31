@@ -51,10 +51,13 @@ export const tebexBasketSchema = z.object({
   packages: z
     .array(
       z.object({
-        id: z.coerce.string(),
+        id: z.coerce.string().optional(),
+        package_id: z.coerce.string().optional(),
         name: z.string().default("Package"),
-        quantity: z.coerce.number().int().default(1),
-        price: z.coerce.number().default(0),
+        quantity: z.coerce.number().int().optional(),
+        qty: z.coerce.number().int().optional(),
+        price: z.coerce.number().optional(),
+        base_price: z.coerce.number().optional(),
       }),
     )
     .default([]),
