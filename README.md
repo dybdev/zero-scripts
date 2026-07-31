@@ -1,20 +1,67 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Zero Scripts Storefront
 
-# Run and deploy your AI Studio app
+A production-oriented, headless Tebex storefront for FiveM resources. It uses
+the Next.js App Router, strict TypeScript, Tailwind CSS, TanStack Query, Zustand,
+Zod, Motion, and Lucide icons.
 
-This contains everything you need to run your app locally.
+## Quick start
 
-View your app in AI Studio: https://ai.studio/apps/456c80a9-d94c-4ab6-a1bd-9530736b93dc
+Requirements: Node.js 20.9 or newer and pnpm 9.
 
-## Run Locally
+```bash
+corepack enable
+pnpm install
+cp .env.example .env.local
+pnpm dev
+```
 
-**Prerequisites:**  Node.js
+The default `TEBEX_DATA_SOURCE=mock` mode includes a realistic catalogue and
+local basket interactions, so every public route can be tested without
+credentials.
 
+## Validation
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+pnpm typecheck
+pnpm lint
+pnpm build
+```
+
+## Tebex integration
+
+1. Set `TEBEX_DATA_SOURCE=tebex`.
+2. Set the server-only `TEBEX_WEBSTORE_TOKEN`.
+3. Set `NEXT_PUBLIC_SITE_URL` to the canonical public origin.
+4. Review the raw Tebex catalogue mapping in
+   `src/lib/tebex/client.ts` against your live package fields, category
+   structure, and image host.
+5. Configure the official community/support URLs in the footer and support
+   page before launch.
+
+The browser never receives the Tebex token. Catalogue reads occur through the
+server adapter, and all basket mutations are validated by Zod in
+`src/app/api/tebex/basket/route.ts`. Real checkout redirects only to the
+`links.checkout` URL returned by Tebex. Mock mode never simulates a successful
+payment.
+
+Account purchase history requires the official Tebex basket authentication flow
+for the chosen FiveM identity provider. That integration point is intentionally
+isolated from local UI state and is not represented as a fake sign-in.
+
+## Architecture
+
+- `src/app/(storefront)`: public pages, loading, and error boundaries
+- `src/app/api/tebex`: server-only catalogue and basket handlers
+- `src/components`: brand, basket, catalogue, layout, product, and UI primitives
+- `src/lib/tebex`: schemas, types, mock data, and swappable adapters
+- `src/stores`: persisted local basket/UI state with selector-based subscriptions
+- `src/providers`: TanStack Query client boundary
+
+Poppins is loaded once with `next/font/google`. Brand assets live in
+`public/brand`; their source proportions and colors are untouched. Product
+artwork is code-native and uses the supplied logo, category iconography, and
+subtle grid texture, keeping the storefront fast and visually consistent
+without decorative raster artwork.
+
+Toast feedback is provided by React Toastify with project-specific styling,
+icons, timing, focus behavior, and reduced visual noise.
