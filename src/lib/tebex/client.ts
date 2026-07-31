@@ -92,9 +92,14 @@ class TebexAdapter implements CatalogueAdapter {
     this.baseUrl = env.TEBEX_API_BASE_URL.replace(/\/$/, "");
   }
 
-  private async request(path: string, init?: RequestInit): Promise<unknown> {
+  private async request(
+    path: string,
+    init?: RequestInit,
+    accountScoped = true,
+  ): Promise<unknown> {
+    const prefix = accountScoped ? `/accounts/${this.token}` : "";
     const response = await fetch(
-      `${this.baseUrl}/accounts/${this.token}${path}`,
+      `${this.baseUrl}${prefix}${path}`,
       {
         ...init,
         headers: {
@@ -209,6 +214,7 @@ class TebexAdapter implements CatalogueAdapter {
         complete_url: input.completeUrl,
         cancel_url: input.cancelUrl,
         complete_auto_redirect: true,
+        ...(input.ipAddress ? { ip_address: input.ipAddress } : {}),
       }),
     });
     return toBasket(raw);
@@ -244,10 +250,14 @@ class TebexAdapter implements CatalogueAdapter {
     packageId: string,
     quantity = 1,
   ): Promise<TebexBasket> {
-    const raw = await this.request(`/baskets/${basketId}/packages`, {
-      method: "POST",
-      body: JSON.stringify({ package_id: packageId, quantity }),
-    });
+    const raw = await this.request(
+      `/baskets/${basketId}/packages`,
+      {
+        method: "POST",
+        body: JSON.stringify({ package_id: packageId, quantity }),
+      },
+      false,
+    );
     return toBasket(raw);
   }
 
@@ -256,10 +266,14 @@ class TebexAdapter implements CatalogueAdapter {
     packageId: string,
     quantity = 1,
   ): Promise<TebexBasket> {
-    const raw = await this.request(`/baskets/${basketId}/packages/remove`, {
-      method: "POST",
-      body: JSON.stringify({ package_id: packageId, quantity }),
-    });
+    const raw = await this.request(
+      `/baskets/${basketId}/packages/remove`,
+      {
+        method: "POST",
+        body: JSON.stringify({ package_id: packageId, quantity }),
+      },
+      false,
+    );
     return toBasket(raw);
   }
 

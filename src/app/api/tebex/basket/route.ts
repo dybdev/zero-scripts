@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
+import { getRequestIpv4 } from "@/lib/request-ip";
 import { getCatalogueAdapter } from "@/lib/tebex/client";
 import { basketRequestSchema } from "@/lib/tebex/schemas";
 
@@ -29,6 +30,7 @@ export async function POST(request: Request) {
       basket = await adapter.createBasket({
         completeUrl: `${env.NEXT_PUBLIC_SITE_URL}/?checkout=complete`,
         cancelUrl: `${env.NEXT_PUBLIC_SITE_URL}/store?checkout=cancelled`,
+        ipAddress: getRequestIpv4(request),
       });
       for (const item of input.items) {
         basket = await adapter.addPackage(
@@ -62,7 +64,8 @@ export async function POST(request: Request) {
       basket,
       checkoutUrl: basket.checkoutUrl,
     });
-  } catch {
+  } catch (error) {
+    console.error("Tebex basket request failed", error);
     return NextResponse.json(
       {
         message:

@@ -59,6 +59,7 @@ export interface TebexBasket {
 export interface CreateBasketInput {
   completeUrl: string;
   cancelUrl: string;
+  ipAddress?: string;
 }
 
 export interface AuthenticationLink {

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
+import { getRequestIpv4 } from "@/lib/request-ip";
 import { getCatalogueAdapter } from "@/lib/tebex/client";
 
-export async function POST() {
+export async function POST(request: Request) {
   if (env.TEBEX_DATA_SOURCE === "mock") {
     return NextResponse.json(
       {
@@ -20,6 +21,7 @@ export async function POST() {
     const basket = await adapter.createBasket({
       completeUrl: `${env.NEXT_PUBLIC_SITE_URL}/?checkout=complete`,
       cancelUrl: `${env.NEXT_PUBLIC_SITE_URL}/`,
+      ipAddress: getRequestIpv4(request),
     });
     const links = await adapter.getAuthenticationLinks(basket.ident, returnUrl);
     const preferred =
@@ -60,7 +62,8 @@ export async function POST() {
       },
     );
     return response;
-  } catch {
+  } catch (error) {
+    console.error("Tebex authentication request failed", error);
     return NextResponse.json(
       {
         message: "Tebex could not start sign in. Please try again in a moment.",
