@@ -12,7 +12,6 @@ export const basketRequestSchema = z.discriminatedUnion("action", [
       )
       .min(1),
     code: z.string().trim().min(2).max(64).optional(),
-    codeType: z.enum(["coupon", "creator-code"]).optional(),
   }),
   z.object({
     action: z.literal("add"),
