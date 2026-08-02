@@ -14,6 +14,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { useBuyerAuth } from "@/components/account/auth-provider";
+import { ZeroLogo } from "@/components/brand/zero-logo";
 import { useOverlay } from "@/hooks/use-overlay";
 import type { Product } from "@/lib/tebex/types";
 import { cn } from "@/lib/utils";
@@ -31,7 +32,7 @@ export function AddToBasketButton({
   className?: string;
 }) {
   const addItem = useBasketStore((state) => state.addItem);
-  const { authenticated, discordVerified, requestSignIn } = useBuyerAuth();
+  const { discordVerified } = useBuyerAuth();
   const [added, setAdded] = useState(false);
   const [discordOpen, setDiscordOpen] = useState(false);
   const [discordPending, setDiscordPending] = useState(false);
@@ -68,13 +69,6 @@ export function AddToBasketButton({
   }, [discordVerified, finishAdd, product.id]);
 
   const add = () => {
-    if (!authenticated) {
-      requestSignIn();
-      toast.info("Sign in with CFX before adding products to your bag.", {
-        toastId: "basket-auth-required",
-      });
-      return;
-    }
     if (!discordVerified) {
       setDiscordOpen(true);
       return;
@@ -162,15 +156,14 @@ export function AddToBasketButton({
               role="dialog"
               aria-modal="true"
               aria-labelledby={`discord-product-${product.id}`}
-              className="fixed top-1/2 left-1/2 z-90 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[16px] border border-white/10 bg-[#151515] p-6 shadow-2xl"
-              initial={{ opacity: 0, y: "-46%", scale: 0.98 }}
-              animate={{ opacity: 1, y: "-50%", scale: 1 }}
-              exit={{ opacity: 0, y: "-46%", scale: 0.98 }}
+              className="fixed inset-x-3 bottom-3 z-90 mx-auto w-[calc(100%-1.5rem)] max-w-lg rounded-[16px] border border-white/10 bg-[#151515] p-6 shadow-[0_-24px_80px_rgba(0,0,0,.55)] sm:bottom-6 sm:p-8"
+              initial={{ y: "110%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "110%", opacity: 0 }}
+              transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#5865f2] text-white">
-                  <MessageCircle size={24} strokeWidth={2} />
-                </div>
+              <div className="flex items-center justify-between gap-4">
+                <ZeroLogo variant="banner" className="w-36" />
                 <button
                   type="button"
                   className="icon-button"
@@ -181,17 +174,22 @@ export function AddToBasketButton({
                   <X size={18} strokeWidth={2.2} />
                 </button>
               </div>
-              <h2
-                id={`discord-product-${product.id}`}
-                className="mt-5 text-xl font-bold text-white"
-              >
-                Verify Discord to add this product
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-[#aaa]">
-                Tebex needs your verified Discord ID for purchase logging and
-                configured Discord actions. Your CFX account remains the main
-                FiveM purchaser identity.
-              </p>
+              <div className="mt-8 text-center">
+                <div className="mx-auto grid size-14 place-items-center rounded-[12px] bg-[#5865f2] text-white">
+                  <MessageCircle size={27} strokeWidth={2} />
+                </div>
+                <h2
+                  id={`discord-product-${product.id}`}
+                  className="mt-5 text-2xl font-bold text-white"
+                >
+                  Verify Discord to add this product
+                </h2>
+                <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[#aaa]">
+                  Tebex needs your verified Discord ID for purchase logging and
+                  configured Discord actions. Your CFX account remains the main
+                  FiveM purchaser identity.
+                </p>
+              </div>
               <button
                 type="button"
                 className="button-primary mt-6 w-full bg-[#5865f2]!"
