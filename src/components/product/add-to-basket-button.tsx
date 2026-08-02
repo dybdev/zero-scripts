@@ -33,7 +33,7 @@ export function AddToBasketButton({
   className?: string;
 }) {
   const addItem = useBasketStore((state) => state.addItem);
-  const { discordVerified } = useBuyerAuth();
+  const { authenticated, discordVerified, requestSignIn } = useBuyerAuth();
   const [added, setAdded] = useState(false);
   const [discordOpen, setDiscordOpen] = useState(false);
   const [discordPending, setDiscordPending] = useState(false);
@@ -75,6 +75,13 @@ export function AddToBasketButton({
   }, [discordVerified, finishAdd, product.id]);
 
   const add = () => {
+    if (!authenticated) {
+      requestSignIn();
+      toast.info("Sign in with CFX before adding products to your bag.", {
+        toastId: "basket-cfx-required",
+      });
+      return;
+    }
     if (!discordVerified) {
       setDiscordOpen(true);
       return;

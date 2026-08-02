@@ -37,7 +37,7 @@ export function AuthProvider({
 
   return (
     <AuthContext.Provider value={value}>
-      <SessionTimeout />
+      <SessionTimeout authenticated={authenticated} />
       {children}
       <SignInModal open={signInOpen} onClose={() => setSignInOpen(false)} />
     </AuthContext.Provider>

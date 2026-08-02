@@ -10,7 +10,7 @@ const ACTIVITY_WRITE_INTERVAL_MS = 15 * 1000;
 const LAST_ACTIVITY_KEY = "zero-scripts-last-activity";
 const SESSION_EXPIRED_KEY = "zero-scripts-session-expired";
 
-export function SessionTimeout() {
+export function SessionTimeout({ authenticated }: { authenticated: boolean }) {
   useEffect(() => {
     const currentUrl = new URL(window.location.href);
     if (currentUrl.searchParams.get("session") === "expired") {
@@ -26,6 +26,12 @@ export function SessionTimeout() {
 
     let expiring = false;
     let lastWrite = 0;
+
+    if (!authenticated) {
+      useBasketStore.setState({ items: [], isOpen: false });
+      useBasketStore.persist.clearStorage();
+      window.sessionStorage.removeItem("zero_pending_product");
+    }
 
     const clearSession = async (broadcast = true) => {
       if (expiring) return;
@@ -103,7 +109,7 @@ export function SessionTimeout() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.clearInterval(intervalId);
     };
-  }, []);
+  }, [authenticated]);
 
   return null;
 }

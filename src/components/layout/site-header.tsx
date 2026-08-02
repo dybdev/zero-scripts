@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import type { BuyerIdentity } from "@/lib/tebex/types";
+import { useBasketStore } from "@/stores/basket-store";
 
 import { useBuyerAuth } from "../account/auth-provider";
 import { ZeroLogo } from "../brand/zero-logo";
@@ -24,6 +25,8 @@ export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
   const pathname = usePathname();
   const router = useRouter();
   const { requestSignIn } = useBuyerAuth();
+  const clearBasket = useBasketStore((state) => state.clear);
+  const closeBasket = useBasketStore((state) => state.close);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -156,6 +159,11 @@ export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
                       role="menuitem"
                       className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-semibold text-[#bbb] transition-colors hover:bg-[var(--brand-red)] hover:text-white"
                       onClick={async () => {
+                        clearBasket();
+                        closeBasket();
+                        window.sessionStorage.removeItem(
+                          "zero_pending_product",
+                        );
                         await Promise.all([
                           fetch("/api/tebex/auth", { method: "DELETE" }),
                           fetch("/api/auth/discord", { method: "DELETE" }),
