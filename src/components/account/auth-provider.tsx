@@ -9,6 +9,7 @@ import {
 } from "react";
 
 import { SignInModal } from "./sign-in-modal";
+import { SessionTimeout } from "./session-timeout";
 
 interface AuthContextValue {
   authenticated: boolean;
@@ -36,6 +37,7 @@ export function AuthProvider({
 
   return (
     <AuthContext.Provider value={value}>
+      <SessionTimeout />
       {children}
       <SignInModal open={signInOpen} onClose={() => setSignInOpen(false)} />
     </AuthContext.Provider>
