@@ -6,9 +6,11 @@ import { ProductCard } from "./product-card";
 export function ProductGrid({
   products,
   layout = "featured",
+  showCategoryLabels = false,
 }: {
   products: Product[];
   layout?: "catalogue" | "featured";
+  showCategoryLabels?: boolean;
 }) {
   if (!products.length) return <EmptyState />;
   return (
@@ -24,6 +26,7 @@ export function ProductGrid({
           key={product.id}
           product={product}
           large={layout === "featured"}
+          showCategoryLabel={showCategoryLabels}
         />
       ))}
     </div>

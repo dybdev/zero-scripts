@@ -12,9 +12,11 @@ import { ProductPrice } from "./product-price";
 export function ProductCard({
   product,
   large = false,
+  showCategoryLabel = false,
 }: {
   product: Product;
   large?: boolean;
+  showCategoryLabel?: boolean;
 }) {
   return (
     <article className="product-card group flex min-w-0 transform-gpu flex-col overflow-hidden rounded-[14px] border border-white/8 bg-[#151515] shadow-[0_8px_24px_rgba(0,0,0,0)] transition-[transform,border-color,box-shadow] duration-500 ease-[cubic-bezier(.22,1,.36,1)] will-change-transform hover:-translate-y-1 hover:border-white/16 hover:shadow-[0_24px_64px_rgba(0,0,0,.32)]">
@@ -25,6 +27,11 @@ export function ProductCard({
           large ? "aspect-[1.55/1]" : "aspect-[1.45/1]",
         )}
       >
+        {showCategoryLabel ? (
+          <span className="absolute top-3 left-3 z-10 rounded-md border border-white/12 bg-black/80 px-2.5 py-1 text-[10px] font-extrabold tracking-[0.13em] text-white uppercase shadow-lg backdrop-blur-md">
+            {product.category}
+          </span>
+        ) : null}
         <ProductArtwork
           product={product}
           className="h-full w-full transform-gpu transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] will-change-transform group-hover:scale-[1.025]"
