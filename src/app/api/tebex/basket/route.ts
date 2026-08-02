@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     if (input.action === "create") {
       let basketId = request.cookies.get("zero_tebex_basket")?.value;
       const storedProvider = request.cookies.get("zero_auth_provider")?.value;
-      const provider = "discord" as const;
+      const provider = "cfx" as const;
 
       if (!basketId) {
         stage = "creating the Tebex basket";
@@ -70,20 +70,14 @@ export async function POST(request: NextRequest) {
       if (!buyer) {
         stage = "preparing buyer authentication";
         const returnUrl = `${env.NEXT_PUBLIC_SITE_URL}/store?authenticated=true&checkout=resume`;
-        const links = await adapter.getAuthenticationLinks(
-          basketId,
-          returnUrl,
-        );
-        const preferred =
-          links.find((link) => /discord/i.test(link.name)) ??
-          links.find((link) => /fivem|cfx/i.test(link.name)) ??
-          links[0];
+        const links = await adapter.getAuthenticationLinks(basketId, returnUrl);
+        const preferred = links.find((link) => /fivem|cfx/i.test(link.name));
 
         if (!preferred) {
           return NextResponse.json(
             {
               message:
-                "No Cfx or Discord authentication provider is enabled for this Tebex store.",
+                "FiveM authentication is not enabled for this Tebex store.",
             },
             { status: 422 },
           );
@@ -102,17 +96,13 @@ export async function POST(request: NextRequest) {
           path: "/",
           maxAge: 60 * 60,
         });
-        response.cookies.set(
-          "zero_auth_provider",
-          /discord/i.test(preferred.name) ? "discord" : "cfx",
-          {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: process.env.NODE_ENV === "production",
-            path: "/",
-            maxAge: 60 * 60,
-          },
-        );
+        response.cookies.set("zero_auth_provider", "cfx", {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+          maxAge: 60 * 60,
+        });
         return response;
       }
 
@@ -122,9 +112,7 @@ export async function POST(request: NextRequest) {
           basketId,
           item.packageId,
           item.quantity,
-          buyer.usernameId
-            ? { discord_id: buyer.usernameId }
-            : undefined,
+          undefined,
         );
       }
       stage = "retrieving the checkout link";

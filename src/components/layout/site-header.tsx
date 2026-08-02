@@ -1,13 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ChevronDown,
-  LogIn,
-  LogOut,
-  Menu,
-  MessageCircle,
-} from "lucide-react";
+import { ChevronDown, LogIn, LogOut, Menu, MessageCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -195,9 +189,7 @@ export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
                     className="header-surface absolute top-[calc(100%+.5rem)] right-0 w-48 overflow-hidden p-1.5"
                   >
                     <a
-                      href={
-                        process.env.NEXT_PUBLIC_DISCORD_URL ?? "/support"
-                      }
+                      href={process.env.NEXT_PUBLIC_DISCORD_URL ?? "/support"}
                       role="menuitem"
                       className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold text-[#bbb] transition-colors hover:bg-[#222] hover:text-white"
                       onClick={() => setAccountOpen(false)}
@@ -214,9 +206,10 @@ export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
                       role="menuitem"
                       className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-semibold text-[#bbb] transition-colors hover:bg-[var(--brand-red)] hover:text-white"
                       onClick={async () => {
-                        await fetch("/api/tebex/auth", {
-                          method: "DELETE",
-                        });
+                        await Promise.all([
+                          fetch("/api/tebex/auth", { method: "DELETE" }),
+                          fetch("/api/auth/discord", { method: "DELETE" }),
+                        ]);
                         setAccountOpen(false);
                         router.push("/");
                         router.refresh();

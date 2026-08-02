@@ -1,6 +1,12 @@
 "use client";
 
-import { Gamepad2, LoaderCircle, LogIn, ShieldCheck, X } from "lucide-react";
+import {
+  Gamepad2,
+  LoaderCircle,
+  MessageCircle,
+  ShieldCheck,
+  X,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
@@ -17,10 +23,10 @@ export function SignInModal({
 }) {
   const close = useCallback(() => onClose(), [onClose]);
   const ref = useOverlay(open, close);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<"cfx" | "discord" | null>(null);
 
-  const startSignIn = async () => {
-    setLoading(true);
+  const startCfxSignIn = async () => {
+    setLoading("cfx");
     try {
       const response = await fetch("/api/tebex/auth", { method: "POST" });
       const body = (await response.json()) as {
@@ -37,7 +43,31 @@ export function SignInModal({
           ? error.message
           : "Sign in could not be started.",
       );
-      setLoading(false);
+      setLoading(null);
+    }
+  };
+
+  const startDiscordSignIn = async () => {
+    setLoading("discord");
+    try {
+      const response = await fetch("/api/auth/discord", { method: "POST" });
+      const body = (await response.json()) as {
+        authUrl?: string;
+        message?: string;
+      };
+      if (!response.ok || !body.authUrl) {
+        throw new Error(
+          body.message ?? "Discord sign in could not be started.",
+        );
+      }
+      window.location.assign(body.authUrl);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Discord sign in could not be started.",
+      );
+      setLoading(null);
     }
   };
 
@@ -88,26 +118,45 @@ export function SignInModal({
                 Sign in to Zero Scripts
               </h2>
               <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[var(--neutral-400)]">
-                Connect Discord through Tebex to access your purchases and
-                buyer account.
+                Choose how you want to identify yourself. CFX is required by
+                Tebex when you check out a FiveM resource.
               </p>
             </div>
             <button
               type="button"
-              onClick={() => void startSignIn()}
-              disabled={loading}
+              onClick={() => void startCfxSignIn()}
+              disabled={loading !== null}
               className="button-primary button-solid-red mt-7 w-full"
             >
-              {loading ? (
+              {loading === "cfx" ? (
                 <LoaderCircle
                   size={18}
                   strokeWidth={2.2}
                   className="animate-spin"
                 />
               ) : (
-                <LogIn size={18} strokeWidth={2.2} />
+                <Gamepad2 size={18} strokeWidth={2.2} />
               )}
-              {loading ? "Redirecting..." : "Continue to sign in"}
+              {loading === "cfx" ? "Redirecting..." : "Continue with CFX"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void startDiscordSignIn()}
+              disabled={loading !== null}
+              className="button-secondary mt-3 w-full"
+            >
+              {loading === "discord" ? (
+                <LoaderCircle
+                  size={18}
+                  strokeWidth={2.2}
+                  className="animate-spin"
+                />
+              ) : (
+                <MessageCircle size={18} strokeWidth={2.2} />
+              )}
+              {loading === "discord"
+                ? "Redirecting..."
+                : "Continue with Discord"}
             </button>
             <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs text-[#777]">
               <ShieldCheck
@@ -115,7 +164,7 @@ export function SignInModal({
                 strokeWidth={2}
                 className="text-[var(--brand-red-light)]"
               />
-              Your Discord identity is securely verified through Tebex.
+              Authentication happens on the official CFX or Discord website.
             </p>
           </motion.section>
         </>

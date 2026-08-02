@@ -24,16 +24,12 @@ export async function POST(request: Request) {
       ipAddress: getRequestIpv4(request),
     });
     const links = await adapter.getAuthenticationLinks(basket.ident, returnUrl);
-    const preferred =
-      links.find((link) => /discord/i.test(link.name)) ??
-      links.find((link) => /fivem|cfx/i.test(link.name)) ??
-      links[0];
+    const preferred = links.find((link) => /fivem|cfx/i.test(link.name));
 
     if (!preferred) {
       return NextResponse.json(
         {
-          message:
-            "No Cfx or Discord authentication provider is enabled for this Tebex store.",
+          message: "FiveM authentication is not enabled for this Tebex store.",
         },
         { status: 422 },
       );
@@ -50,17 +46,13 @@ export async function POST(request: Request) {
       path: "/",
       maxAge: 60 * 60,
     });
-    response.cookies.set(
-      "zero_auth_provider",
-      /discord/i.test(preferred.name) ? "discord" : "cfx",
-      {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60,
-      },
-    );
+    response.cookies.set("zero_auth_provider", "cfx", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60,
+    });
     return response;
   } catch (error) {
     console.error("Tebex authentication request failed", error);
