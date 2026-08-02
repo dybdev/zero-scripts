@@ -128,6 +128,15 @@ export async function POST(request: NextRequest) {
           { discord_id: discordBuyer.usernameId },
         );
       }
+      if (input.code) {
+        if (input.codeType === "creator-code") {
+          stage = "applying the creator code";
+          basket = await adapter.applyCreatorCode(basketId, input.code);
+        } else {
+          stage = "applying the coupon";
+          basket = await adapter.applyCoupon(basketId, input.code);
+        }
+      }
       stage = "retrieving the checkout link";
       basket = await adapter.getCheckout(basketId);
     } else if (input.action === "add") {

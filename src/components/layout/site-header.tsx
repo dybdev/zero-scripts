@@ -20,18 +20,13 @@ const navItems = [
   { href: "/support", label: "Support" },
 ];
 
-const currencies = ["USD", "EUR", "GBP", "CAD"] as const;
-
 export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
   const pathname = usePathname();
   const router = useRouter();
   const { requestSignIn } = useBuyerAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [currencyOpen, setCurrencyOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [currency, setCurrency] = useState<(typeof currencies)[number]>("USD");
-  const currencyRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,24 +37,20 @@ export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
   }, []);
 
   useEffect(() => {
-    const closeCurrency = (event: MouseEvent) => {
-      if (!currencyRef.current?.contains(event.target as Node)) {
-        setCurrencyOpen(false);
-      }
+    const closeAccount = (event: MouseEvent) => {
       if (!accountRef.current?.contains(event.target as Node)) {
         setAccountOpen(false);
       }
     };
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setCurrencyOpen(false);
         setAccountOpen(false);
       }
     };
-    document.addEventListener("mousedown", closeCurrency);
+    document.addEventListener("mousedown", closeAccount);
     document.addEventListener("keydown", closeOnEscape);
     return () => {
-      document.removeEventListener("mousedown", closeCurrency);
+      document.removeEventListener("mousedown", closeAccount);
       document.removeEventListener("keydown", closeOnEscape);
     };
   }, []);
@@ -111,52 +102,11 @@ export function SiteHeader({ buyer = null }: { buyer?: BuyerIdentity | null }) {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2">
-            <div ref={currencyRef} className="relative hidden md:block">
-              <button
-                type="button"
-                className="header-action header-surface min-w-[86px]"
-                aria-haspopup="listbox"
-                aria-expanded={currencyOpen}
-                onClick={() => setCurrencyOpen((open) => !open)}
-              >
-                <span className="text-sm font-semibold">{currency}</span>
-                <ChevronDown
-                  size={16}
-                  strokeWidth={2.2}
-                  className={cn(
-                    "transition-transform duration-200",
-                    currencyOpen && "rotate-180",
-                  )}
-                />
-              </button>
-              {currencyOpen ? (
-                <div
-                  role="listbox"
-                  aria-label="Select currency"
-                  className="header-surface absolute top-[calc(100%+.5rem)] right-0 w-28 overflow-hidden p-1.5"
-                >
-                  {currencies.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      role="option"
-                      aria-selected={currency === option}
-                      className={cn(
-                        "flex min-h-10 w-full items-center rounded-lg px-3 text-sm font-semibold transition-colors hover:bg-[var(--brand-red)] hover:text-white",
-                        currency === option
-                          ? "text-[var(--brand-red-light)]"
-                          : "text-[#aaa]",
-                      )}
-                      onClick={() => {
-                        setCurrency(option);
-                        setCurrencyOpen(false);
-                      }}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
+            <div
+              className="header-action header-surface hidden min-w-[72px] cursor-default md:flex"
+              title="Prices are listed in USD. Tebex may localize currency at checkout."
+            >
+              <span className="text-sm font-semibold">USD</span>
             </div>
             {buyer ? (
               <div ref={accountRef} className="relative">

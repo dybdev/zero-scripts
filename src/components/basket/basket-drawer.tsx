@@ -39,6 +39,8 @@ export function BasketDrawer() {
   const setQuantity = useBasketStore((state) => state.setQuantity);
   const clear = useBasketStore((state) => state.clear);
   const [code, setCode] = useState("");
+  const [codeType, setCodeType] = useState<"coupon" | "creator-code">("coupon");
+  const [codeReady, setCodeReady] = useState(false);
   const [status, setStatus] = useState("");
   const [discordPrompt, setDiscordPrompt] = useState(false);
   const [discordPending, setDiscordPending] = useState(false);
@@ -73,6 +75,7 @@ export function BasketDrawer() {
             packageId: item.product.id,
             quantity: item.quantity,
           })),
+          ...(codeReady && code.trim() ? { code: code.trim(), codeType } : {}),
         }),
       });
       const body = (await response.json()) as CheckoutResponse;
@@ -279,22 +282,44 @@ export function BasketDrawer() {
                   <form
                     onSubmit={(event) => {
                       event.preventDefault();
-                      const message = code.trim()
-                        ? "Codes are applied securely after a Tebex basket is created."
-                        : "Enter a coupon or creator code first.";
+                      const hasCode = code.trim().length >= 2;
+                      setCodeReady(hasCode);
+                      const message = hasCode
+                        ? `${codeType === "coupon" ? "Coupon" : "Creator code"} ${code.trim()} will be applied to the Tebex basket at checkout.`
+                        : "Enter a valid code first.";
                       setStatus(message);
                       toast.info(message, { toastId: "basket-code" });
                     }}
-                    className="flex gap-2"
+                    className="grid grid-cols-[auto_1fr_auto] gap-2"
                   >
+                    <label htmlFor="basket-code-type" className="sr-only">
+                      Code type
+                    </label>
+                    <select
+                      id="basket-code-type"
+                      value={codeType}
+                      onChange={(event) => {
+                        setCodeType(
+                          event.target.value as "coupon" | "creator-code",
+                        );
+                        setCodeReady(false);
+                      }}
+                      className="field w-28 px-2 text-xs"
+                    >
+                      <option value="coupon">Coupon</option>
+                      <option value="creator-code">Creator</option>
+                    </select>
                     <label htmlFor="basket-code" className="sr-only">
                       Coupon or creator code
                     </label>
                     <input
                       id="basket-code"
                       value={code}
-                      onChange={(event) => setCode(event.target.value)}
-                      placeholder="Coupon or creator code"
+                      onChange={(event) => {
+                        setCode(event.target.value);
+                        setCodeReady(false);
+                      }}
+                      placeholder="Enter code"
                       className="field min-w-0 flex-1"
                     />
                     <button type="submit" className="button-secondary px-4">
@@ -387,7 +412,7 @@ export function BasketDrawer() {
                       )}
                       <span>
                         {checkout.isPending
-                          ? "Preparing checkout…"
+                          ? "Preparing checkout..."
                           : "Secure checkout"}
                       </span>
                       <ArrowRight size={17} strokeWidth={2.2} />

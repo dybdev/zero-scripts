@@ -98,10 +98,10 @@ export default function DocumentationPage() {
             Compatibility baseline
           </h2>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-[var(--neutral-400)]">
-            <li>• Current FiveM artifacts with OneSync enabled</li>
-            <li>• Qbox, QBCore, ESX, or standalone as listed</li>
-            <li>• Dependency versions shown on the product page</li>
-            <li>• Server access sufficient to install and restart resources</li>
+            <li>- Current FiveM artifacts with OneSync enabled</li>
+            <li>- Qbox, QBCore, ESX, or standalone as listed</li>
+            <li>- Dependency versions shown on the product page</li>
+            <li>- Server access sufficient to install and restart resources</li>
           </ul>
         </div>
         <div className="py-9 lg:pl-10">

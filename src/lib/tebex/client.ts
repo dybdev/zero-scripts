@@ -103,28 +103,25 @@ class TebexAdapter implements CatalogueAdapter {
     accountScoped = true,
   ): Promise<unknown> {
     const prefix = accountScoped ? `/accounts/${this.token}` : "";
-    const response = await fetch(
-      `${this.baseUrl}${prefix}${path}`,
-      {
-        ...init,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          ...(this.privateKey && accountScoped
-            ? {
-                Authorization: `Basic ${Buffer.from(
-                  `${this.token}:${this.privateKey}`,
-                ).toString("base64")}`,
-              }
-            : {}),
-          ...init?.headers,
-        },
-        next:
-          init?.method || init?.cache === "no-store"
-            ? undefined
-            : { revalidate: 60 },
+    const response = await fetch(`${this.baseUrl}${prefix}${path}`, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...(this.privateKey && accountScoped
+          ? {
+              Authorization: `Basic ${Buffer.from(
+                `${this.token}:${this.privateKey}`,
+              ).toString("base64")}`,
+            }
+          : {}),
+        ...init?.headers,
       },
-    );
+      next:
+        init?.method || init?.cache === "no-store"
+          ? undefined
+          : { revalidate: 60 },
+    });
 
     if (!response.ok) {
       const details = await response.text();
@@ -207,6 +204,10 @@ class TebexAdapter implements CatalogueAdapter {
         description: String(item.description ?? ""),
         descriptionHtml: String(item.description ?? ""),
         price: Number(item.total_price ?? item.base_price ?? 0),
+        currency:
+          typeof item.currency === "string" && item.currency
+            ? item.currency
+            : mockProducts[0].currency,
         image,
         gallery,
         featured: false,

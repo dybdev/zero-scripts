@@ -1,12 +1,13 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import { useOverlay } from "@/hooks/use-overlay";
-import { mockProducts } from "@/lib/tebex/mock-data";
+import type { Product } from "@/lib/tebex/types";
 
 export function SearchDialog({
   open,
@@ -18,10 +19,30 @@ export function SearchDialog({
   const [query, setQuery] = useState("");
   const close = useCallback(() => onClose(), [onClose]);
   const ref = useOverlay(open, close);
+  const {
+    data: products = [],
+    isError,
+    isLoading,
+  } = useQuery({
+    queryKey: ["tebex", "packages", "search"],
+    queryFn: async () => {
+      const response = await fetch("/api/tebex/packages");
+      const body = (await response.json()) as {
+        data?: Product[];
+        message?: string;
+      };
+      if (!response.ok || !body.data) {
+        throw new Error(body.message ?? "Unable to load the catalogue.");
+      }
+      return body.data;
+    },
+    enabled: open,
+    staleTime: 60_000,
+  });
   const results = useMemo(() => {
-    if (!query.trim()) return mockProducts.slice(0, 4);
+    if (!query.trim()) return products.slice(0, 4);
     const needle = query.toLowerCase();
-    return mockProducts
+    return products
       .filter((product) =>
         [product.name, product.category, product.description]
           .join(" ")
@@ -29,7 +50,7 @@ export function SearchDialog({
           .includes(needle),
       )
       .slice(0, 6);
-  }, [query]);
+  }, [products, query]);
 
   return (
     <AnimatePresence>
@@ -68,7 +89,7 @@ export function SearchDialog({
                 autoFocus
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search resources and categories…"
+                placeholder="Search resources and categories..."
                 className="h-16 min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#666]"
               />
               <button
@@ -84,7 +105,16 @@ export function SearchDialog({
               <p className="px-3 py-2 text-[10px] font-bold tracking-[0.14em] text-[#777] uppercase">
                 {query ? "Results" : "Popular resources"}
               </p>
-              {results.length ? (
+              {isLoading ? (
+                <p className="px-3 py-8 text-center text-sm text-[#888]">
+                  Loading live resources...
+                </p>
+              ) : isError ? (
+                <p className="px-3 py-8 text-center text-sm text-[#b98d88]">
+                  Live search is temporarily unavailable. Please browse the
+                  store instead.
+                </p>
+              ) : results.length ? (
                 results.map((product) => (
                   <Link
                     key={product.id}
@@ -109,7 +139,7 @@ export function SearchDialog({
                 ))
               ) : (
                 <p className="px-3 py-8 text-center text-sm text-[#888]">
-                  No resources match “{query}”.
+                  No resources match &quot;{query}&quot;.
                 </p>
               )}
             </div>

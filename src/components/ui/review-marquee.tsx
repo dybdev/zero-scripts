@@ -25,7 +25,7 @@ function ReviewCard({ quote }: { quote: string }) {
         <Quote size={22} strokeWidth={1.8} className="text-[#555]" />
       </div>
       <p className="mt-5 text-base leading-7 font-medium text-[#e5e5e5]">
-        “{quote}”
+        &quot;{quote}&quot;
       </p>
       <p className="mt-5 text-xs font-bold tracking-[0.12em] text-[#777] uppercase">
         Development preview

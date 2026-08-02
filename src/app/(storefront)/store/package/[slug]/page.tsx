@@ -32,7 +32,7 @@ export async function generateMetadata({
     title: product.name,
     description: product.description,
     openGraph: {
-      title: `${product.name} — Zero Scripts`,
+      title: `${product.name} - Zero Scripts`,
       description: product.description,
       images: [product.image],
     },
@@ -290,7 +290,7 @@ export default async function ProductPage({
               <h2 className="text-xs font-bold text-white">Dependencies</h2>
               <ul className="mt-3 space-y-2 text-xs text-[var(--neutral-400)]">
                 {product.dependencies.map((dependency) => (
-                  <li key={dependency}>• {dependency}</li>
+                  <li key={dependency}>- {dependency}</li>
                 ))}
               </ul>
             </div>

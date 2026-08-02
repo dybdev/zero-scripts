@@ -20,6 +20,14 @@ const envSchema = z.object({
     (value) => (value === "" ? undefined : value),
     z.string().min(1).optional(),
   ),
+  NEXT_PUBLIC_DISCORD_URL: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.url().optional(),
+  ),
+  NEXT_PUBLIC_SUPPORT_EMAIL: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.email().optional(),
+  ),
 });
 
 export const env = envSchema.parse({
@@ -30,4 +38,6 @@ export const env = envSchema.parse({
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
   DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+  NEXT_PUBLIC_DISCORD_URL: process.env.NEXT_PUBLIC_DISCORD_URL,
+  NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
 });

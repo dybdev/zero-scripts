@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Code2, MessageCircle, ShieldCheck } from "lucide-react";
 
+import { env } from "@/lib/env";
+
 import { ZeroLogo } from "../brand/zero-logo";
 
 const groups = [
@@ -41,13 +43,15 @@ export function SiteFooter() {
               maintainable servers.
             </p>
             <div className="mt-5 flex gap-2">
-              <Link
-                href="/support"
+              <a
+                href={env.NEXT_PUBLIC_DISCORD_URL ?? "/support"}
+                target={env.NEXT_PUBLIC_DISCORD_URL ? "_blank" : undefined}
+                rel={env.NEXT_PUBLIC_DISCORD_URL ? "noreferrer" : undefined}
                 className="icon-button"
                 aria-label="Community support"
               >
                 <MessageCircle size={19} strokeWidth={2} />
-              </Link>
+              </a>
               <Link
                 href="/documentation"
                 className="icon-button"
@@ -78,7 +82,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="mt-12 flex flex-col gap-4 border-t border-white/7 pt-6 text-[11px] text-[#707070] sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 Zero Scripts. All rights reserved.</p>
+          <p>&copy; 2026 Zero Scripts. All rights reserved.</p>
           <div className="flex items-center gap-2">
             <ShieldCheck size={15} strokeWidth={2} />
             <span>Secure checkout and payments provided by Tebex.</span>

@@ -8,6 +8,8 @@ import {
   MessageCircle,
 } from "lucide-react";
 
+import { env } from "@/lib/env";
+
 export const metadata: Metadata = {
   title: "Support",
   description:
@@ -22,6 +24,8 @@ const checklist = [
 ];
 
 export default function SupportPage() {
+  const discordUrl = env.NEXT_PUBLIC_DISCORD_URL;
+  const supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL;
   return (
     <div className="content-shell px-4 pt-12 sm:px-6 lg:px-8">
       <div className="max-w-3xl">
@@ -34,7 +38,7 @@ export default function SupportPage() {
           Product and setup support
         </div>
         <h1 className="mt-5 text-4xl font-extrabold tracking-[-0.05em] text-white sm:text-5xl">
-          Let’s get your server moving.
+          Let&apos;s get your server moving.
         </h1>
         <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--neutral-400)]">
           Start with the documentation for setup and integration questions. For
@@ -57,10 +61,22 @@ export default function SupportPage() {
             Best for configuration questions, known issues, and guidance from
             other server developers.
           </p>
-          <Link href="/documentation" className="button-primary mt-6">
-            Troubleshooting guide
-            <ExternalLink size={16} strokeWidth={2.2} />
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-3">
+            {discordUrl ? (
+              <a
+                href={discordUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="button-primary"
+              >
+                Join Discord
+                <ExternalLink size={16} strokeWidth={2.2} />
+              </a>
+            ) : null}
+            <Link href="/documentation" className="button-secondary">
+              Troubleshooting guide
+            </Link>
+          </div>
         </div>
         <div className="py-8 lg:pl-10">
           <Mail
@@ -75,6 +91,12 @@ export default function SupportPage() {
             For receipt, access, or account questions, contact support from the
             email associated with your Tebex purchase.
           </p>
+          {supportEmail ? (
+            <a href={`mailto:${supportEmail}`} className="button-primary mt-6">
+              Email support
+              <Mail size={16} strokeWidth={2.2} />
+            </a>
+          ) : null}
         </div>
       </div>
 

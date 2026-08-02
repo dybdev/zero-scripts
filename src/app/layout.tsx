@@ -28,8 +28,8 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   ),
   title: {
-    default: "Zero Scripts — Premium FiveM Resources",
-    template: "%s — Zero Scripts",
+    default: "Zero Scripts - Premium FiveM Resources",
+    template: "%s - Zero Scripts",
   },
   description:
     "Premium, performance-first FiveM scripts with secure validation, framework integrations, and maintained documentation.",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Zero Scripts",
-    title: "Zero Scripts — Premium FiveM Resources",
+    title: "Zero Scripts - Premium FiveM Resources",
     description:
       "Performance-first FiveM resources built for production servers.",
     images: [
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Zero Scripts — Premium FiveM Resources",
+    title: "Zero Scripts - Premium FiveM Resources",
     description:
       "Performance-first FiveM resources built for production servers.",
     images: ["/brand/zero-scripts-lockup.png"],
