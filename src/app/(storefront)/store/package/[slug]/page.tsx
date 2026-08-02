@@ -125,57 +125,92 @@ export default async function ProductPage({
             ) : null}
           </div>
 
-          <GlassPanel as="aside" className="top-24 p-5 sm:p-6 lg:sticky">
-            <p className="text-[11px] font-bold tracking-[0.14em] text-[var(--brand-red-light)] uppercase">
-              {product.category}
-            </p>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em] text-white">
-              {product.name}
-            </h1>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {product.compatibility.map((label) => (
-                <CompatibilityBadge key={label} label={label} />
-              ))}
-            </div>
-            <div className="mt-6 flex items-end justify-between gap-4 border-t border-white/8 pt-6">
-              <div>
-                <p className="text-[10px] font-semibold text-[#777] uppercase">
-                  One-time license
-                </p>
-                <ProductPrice
-                  amount={product.price}
-                  currency={product.currency}
-                  className="mt-1 block text-2xl"
-                />
+          <aside className="relative self-start lg:sticky lg:top-24">
+            <GlassPanel className="p-5 sm:p-6">
+              <p className="text-[11px] font-bold tracking-[0.14em] text-[var(--brand-red-light)] uppercase">
+                {product.category}
+              </p>
+              <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em] text-white">
+                {product.name}
+              </h1>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {product.compatibility.map((label) => (
+                  <CompatibilityBadge key={label} label={label} />
+                ))}
               </div>
-              <span className="text-[10px] text-[#777]">Taxes at checkout</span>
-            </div>
-            <AddToBasketButton product={product} className="mt-5 w-full" />
-            <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/8 pt-5 text-[11px]">
-              <div className="flex gap-2">
-                <Package size={15} strokeWidth={2} className="text-[#888]" />
-                <span className="text-[#777]">
-                  Version
-                  <strong className="mt-0.5 block text-[#ccc]">
-                    {product.version}
-                  </strong>
+              <div className="mt-6 flex items-end justify-between gap-4 border-t border-white/8 pt-6">
+                <div>
+                  <p className="text-[10px] font-semibold text-[#777] uppercase">
+                    One-time license
+                  </p>
+                  <ProductPrice
+                    amount={product.price}
+                    currency={product.currency}
+                    className="mt-1 block text-2xl"
+                  />
+                </div>
+                <span className="text-[10px] text-[#777]">
+                  Taxes at checkout
                 </span>
               </div>
-              <div className="flex gap-2">
-                <CalendarDays
-                  size={15}
+              <AddToBasketButton product={product} className="mt-5 w-full" />
+              <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/8 pt-5 text-[11px]">
+                <div className="flex gap-2">
+                  <Package size={15} strokeWidth={2} className="text-[#888]" />
+                  <span className="text-[#777]">
+                    Version
+                    <strong className="mt-0.5 block text-[#ccc]">
+                      {product.version}
+                    </strong>
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <CalendarDays
+                    size={15}
+                    strokeWidth={2}
+                    className="text-[#888]"
+                  />
+                  <span className="text-[#777]">
+                    Updated
+                    <strong className="mt-0.5 block text-[#ccc]">
+                      {product.lastUpdated}
+                    </strong>
+                  </span>
+                </div>
+              </div>
+            </GlassPanel>
+            <div className="absolute inset-x-0 top-[calc(100%+1rem)] hidden space-y-4 lg:block">
+              <div className="rounded-[12px] border border-white/8 bg-[#151515] p-5">
+                <BookOpenText
+                  size={23}
                   strokeWidth={2}
-                  className="text-[#888]"
+                  className="text-[var(--brand-red-light)]"
                 />
-                <span className="text-[#777]">
-                  Updated
-                  <strong className="mt-0.5 block text-[#ccc]">
-                    {product.lastUpdated}
-                  </strong>
-                </span>
+                <h2 className="mt-4 text-base font-bold text-white">
+                  Read before installing
+                </h2>
+                <p className="mt-2 text-xs leading-5 text-[var(--neutral-400)]">
+                  Review dependencies, configuration, exports, and framework
+                  notes in the setup guide.
+                </p>
+                <Link
+                  href="/documentation"
+                  className="button-secondary mt-5 w-full"
+                >
+                  Open documentation
+                  <ArrowRight size={15} strokeWidth={2.2} />
+                </Link>
+              </div>
+              <div className="rounded-[12px] border border-white/8 bg-white/[0.02] p-5">
+                <h2 className="text-xs font-bold text-white">Dependencies</h2>
+                <ul className="mt-3 space-y-2 text-xs text-[var(--neutral-400)]">
+                  {product.dependencies.map((dependency) => (
+                    <li key={dependency}>- {dependency}</li>
+                  ))}
+                </ul>
               </div>
             </div>
-          </GlassPanel>
+          </aside>
         </div>
 
         <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(320px,.7fr)]">
@@ -261,7 +296,7 @@ export default async function ProductPage({
               ))}
             </section>
           </div>
-          <aside>
+          <aside className="lg:hidden">
             <div className="rounded-[12px] border border-white/8 bg-[#151515] p-5">
               <BookOpenText
                 size={23}
