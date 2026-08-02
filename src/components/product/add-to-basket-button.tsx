@@ -10,7 +10,8 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "react-toastify";
 
 import { useBuyerAuth } from "@/components/account/auth-provider";
@@ -36,6 +37,11 @@ export function AddToBasketButton({
   const [added, setAdded] = useState(false);
   const [discordOpen, setDiscordOpen] = useState(false);
   const [discordPending, setDiscordPending] = useState(false);
+  const portalReady = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
   const closeDiscord = useCallback(() => {
     if (!discordPending) setDiscordOpen(false);
   }, [discordPending]);
@@ -139,80 +145,85 @@ export function AddToBasketButton({
                 : "Add"}
         </span>
       </button>
-      <AnimatePresence>
-        {discordOpen ? (
-          <>
-            <motion.button
-              type="button"
-              aria-label="Cancel Discord verification"
-              className="fixed inset-0 z-80 cursor-default bg-black/75 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={closeDiscord}
-            />
-            <motion.section
-              ref={modalRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={`discord-product-${product.id}`}
-              className="fixed inset-x-3 bottom-3 z-90 mx-auto w-[calc(100%-1.5rem)] max-w-lg rounded-[16px] border border-white/10 bg-[#151515] p-6 shadow-[0_-24px_80px_rgba(0,0,0,.55)] sm:bottom-6 sm:p-8"
-              initial={{ y: "110%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "110%", opacity: 0 }}
-              transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="flex items-center justify-between gap-4">
-                <ZeroLogo variant="banner" className="w-36" />
-                <button
-                  type="button"
-                  className="icon-button"
-                  onClick={closeDiscord}
-                  disabled={discordPending}
-                  aria-label="Close Discord verification"
-                >
-                  <X size={18} strokeWidth={2.2} />
-                </button>
-              </div>
-              <div className="mt-8 text-center">
-                <div className="mx-auto grid size-14 place-items-center rounded-[12px] bg-[#5865f2] text-white">
-                  <MessageCircle size={27} strokeWidth={2} />
-                </div>
-                <h2
-                  id={`discord-product-${product.id}`}
-                  className="mt-5 text-2xl font-bold text-white"
-                >
-                  Verify Discord to add this product
-                </h2>
-                <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[#aaa]">
-                  Tebex needs your verified Discord ID for purchase logging and
-                  configured Discord actions. Your CFX account remains the main
-                  FiveM purchaser identity.
-                </p>
-              </div>
-              <button
-                type="button"
-                className="button-primary mt-6 w-full bg-[#5865f2]!"
-                onClick={() => void continueWithDiscord()}
-                disabled={discordPending}
-              >
-                {discordPending ? (
-                  <LoaderCircle
-                    size={18}
-                    strokeWidth={2.2}
-                    className="animate-spin"
+      {portalReady
+        ? createPortal(
+            <AnimatePresence>
+              {discordOpen ? (
+                <>
+                  <motion.button
+                    type="button"
+                    aria-label="Cancel Discord verification"
+                    className="fixed inset-0 z-80 cursor-default bg-black/75 backdrop-blur-sm"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={closeDiscord}
                   />
-                ) : (
-                  <ShieldCheck size={18} strokeWidth={2.2} />
-                )}
-                {discordPending
-                  ? "Opening Discord..."
-                  : "Continue with Discord"}
-              </button>
-            </motion.section>
-          </>
-        ) : null}
-      </AnimatePresence>
+                  <motion.section
+                    ref={modalRef}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby={`discord-product-${product.id}`}
+                    className="fixed inset-x-3 bottom-3 z-90 mx-auto w-[calc(100%-1.5rem)] max-w-lg rounded-[16px] border border-white/10 bg-[#151515] p-6 shadow-[0_-24px_80px_rgba(0,0,0,.55)] sm:bottom-6 sm:p-8"
+                    initial={{ y: "110%", opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: "110%", opacity: 0 }}
+                    transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <ZeroLogo variant="banner" className="w-36" />
+                      <button
+                        type="button"
+                        className="icon-button"
+                        onClick={closeDiscord}
+                        disabled={discordPending}
+                        aria-label="Close Discord verification"
+                      >
+                        <X size={18} strokeWidth={2.2} />
+                      </button>
+                    </div>
+                    <div className="mt-8 text-center">
+                      <div className="mx-auto grid size-14 place-items-center rounded-[12px] bg-[#5865f2] text-white">
+                        <MessageCircle size={27} strokeWidth={2} />
+                      </div>
+                      <h2
+                        id={`discord-product-${product.id}`}
+                        className="mt-5 text-2xl font-bold text-white"
+                      >
+                        Verify Discord to add this product
+                      </h2>
+                      <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[#aaa]">
+                        Tebex needs your verified Discord ID for purchase
+                        logging and configured Discord actions. Your CFX account
+                        remains the main FiveM purchaser identity.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="button-primary mt-6 w-full bg-[#5865f2]!"
+                      onClick={() => void continueWithDiscord()}
+                      disabled={discordPending}
+                    >
+                      {discordPending ? (
+                        <LoaderCircle
+                          size={18}
+                          strokeWidth={2.2}
+                          className="animate-spin"
+                        />
+                      ) : (
+                        <ShieldCheck size={18} strokeWidth={2.2} />
+                      )}
+                      {discordPending
+                        ? "Opening Discord..."
+                        : "Continue with Discord"}
+                    </button>
+                  </motion.section>
+                </>
+              ) : null}
+            </AnimatePresence>,
+            document.body,
+          )
+        : null}
     </>
   );
 }
