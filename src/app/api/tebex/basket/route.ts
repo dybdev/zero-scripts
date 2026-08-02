@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { readDiscordSession } from "@/lib/discord-auth";
 import { env } from "@/lib/env";
 import { getRequestIpv4 } from "@/lib/request-ip";
 import { getCatalogueAdapter } from "@/lib/tebex/client";
@@ -48,6 +49,18 @@ export async function POST(request: NextRequest) {
     let basket;
 
     if (input.action === "create") {
+      const discordBuyer = readDiscordSession(
+        request.cookies.get("zero_discord_session")?.value,
+      );
+      if (!discordBuyer?.usernameId) {
+        return NextResponse.json({
+          requiresAuthentication: true,
+          provider: "discord",
+          message:
+            "Connect Discord before checkout so Tebex can deliver Discord actions and record the verified account.",
+        });
+      }
+
       let basketId = request.cookies.get("zero_tebex_basket")?.value;
       const storedProvider = request.cookies.get("zero_auth_provider")?.value;
       const provider = "cfx" as const;
@@ -112,7 +125,7 @@ export async function POST(request: NextRequest) {
           basketId,
           item.packageId,
           item.quantity,
-          undefined,
+          { discord_id: discordBuyer.usernameId },
         );
       }
       stage = "retrieving the checkout link";

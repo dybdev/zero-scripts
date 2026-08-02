@@ -52,6 +52,11 @@ Account purchase history requires the official Tebex basket authentication flow
 for the chosen FiveM identity provider. That integration point is intentionally
 isolated from local UI state and is not represented as a fake sign-in.
 
+Checkout requires both a verified Discord OAuth session and the Tebex-managed
+FiveM/CFX basket identity. The verified Discord ID is sent to Tebex as
+`variable_data.discord_id`, allowing configured Discord package actions to be
+delivered by the official Tebex bot after a successful payment.
+
 ## Architecture
 
 - `src/app/(storefront)`: public pages, loading, and error boundaries

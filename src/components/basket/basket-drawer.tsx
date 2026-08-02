@@ -74,7 +74,23 @@ export function BasketDrawer() {
       if (!response.ok) throw new Error(body.message ?? "Checkout failed.");
       return body;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      if (data.requiresAuthentication && data.provider === "discord") {
+        const response = await fetch("/api/auth/discord", { method: "POST" });
+        const body = (await response.json()) as {
+          authUrl?: string;
+          message?: string;
+        };
+        if (!response.ok || !body.authUrl) {
+          toast.error(body.message ?? "Discord sign in could not be started.");
+          return;
+        }
+        toast.info(data.message ?? "Connect Discord before checkout.", {
+          toastId: "checkout-discord-auth",
+        });
+        window.location.assign(body.authUrl);
+        return;
+      }
       if (data.requiresAuthentication && data.authUrl) {
         toast.info(data.message ?? "Sign in is required before checkout.", {
           toastId: "checkout-auth",
