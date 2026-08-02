@@ -132,9 +132,6 @@ export default async function ProductPage({
             <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em] text-white">
               {product.name}
             </h1>
-            <p className="mt-3 text-sm leading-6 text-[var(--neutral-400)]">
-              {product.description}
-            </p>
             <div className="mt-5 flex flex-wrap gap-2">
               {product.compatibility.map((label) => (
                 <CompatibilityBadge key={label} label={label} />
