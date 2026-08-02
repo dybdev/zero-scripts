@@ -5,6 +5,8 @@ import {
   ArrowRight,
   LoaderCircle,
   LockKeyhole,
+  MessageCircle,
+  ShieldCheck,
   ShoppingBag,
   Trash2,
   X,
@@ -38,9 +40,12 @@ export function BasketDrawer() {
   const clear = useBasketStore((state) => state.clear);
   const [code, setCode] = useState("");
   const [status, setStatus] = useState("");
+  const [discordPrompt, setDiscordPrompt] = useState(false);
+  const [discordPending, setDiscordPending] = useState(false);
   const close = useCallback(() => {
     closeStore();
     setStatus("");
+    setDiscordPrompt(false);
   }, [closeStore]);
   const overlayRef = useOverlay(isOpen, close);
 
@@ -74,21 +79,10 @@ export function BasketDrawer() {
       if (!response.ok) throw new Error(body.message ?? "Checkout failed.");
       return body;
     },
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       if (data.requiresAuthentication && data.provider === "discord") {
-        const response = await fetch("/api/auth/discord", { method: "POST" });
-        const body = (await response.json()) as {
-          authUrl?: string;
-          message?: string;
-        };
-        if (!response.ok || !body.authUrl) {
-          toast.error(body.message ?? "Discord sign in could not be started.");
-          return;
-        }
-        toast.info(data.message ?? "Connect Discord before checkout.", {
-          toastId: "checkout-discord-auth",
-        });
-        window.location.assign(body.authUrl);
+        setStatus("");
+        setDiscordPrompt(true);
         return;
       }
       if (data.requiresAuthentication && data.authUrl) {
@@ -116,6 +110,30 @@ export function BasketDrawer() {
       );
     },
   });
+
+  const continueWithDiscord = async () => {
+    setDiscordPending(true);
+    try {
+      const response = await fetch("/api/auth/discord", { method: "POST" });
+      const body = (await response.json()) as {
+        authUrl?: string;
+        message?: string;
+      };
+      if (!response.ok || !body.authUrl) {
+        throw new Error(
+          body.message ?? "Discord sign in could not be started.",
+        );
+      }
+      window.location.assign(body.authUrl);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Discord sign in could not be started.",
+      );
+      setDiscordPending(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -304,28 +322,77 @@ export function BasketDrawer() {
                         : status}
                     </p>
                   ) : null}
-                  <button
-                    type="button"
-                    className="button-primary mt-4 w-full"
-                    onClick={() => checkout.mutate()}
-                    disabled={checkout.isPending}
-                  >
-                    {checkout.isPending ? (
-                      <LoaderCircle
-                        size={18}
-                        strokeWidth={2.2}
-                        className="animate-spin"
-                      />
-                    ) : (
-                      <LockKeyhole size={18} strokeWidth={2.2} />
-                    )}
-                    <span>
-                      {checkout.isPending
-                        ? "Preparing checkout…"
-                        : "Secure checkout"}
-                    </span>
-                    <ArrowRight size={17} strokeWidth={2.2} />
-                  </button>
+                  {discordPrompt ? (
+                    <div className="mt-4 rounded-[12px] border border-[#5865f2]/35 bg-[#5865f2]/10 p-4">
+                      <div className="flex items-start gap-3">
+                        <MessageCircle
+                          size={20}
+                          strokeWidth={2.1}
+                          className="mt-0.5 shrink-0 text-[#8b95ff]"
+                        />
+                        <div>
+                          <p className="text-sm font-bold text-white">
+                            Verify Discord before checkout
+                          </p>
+                          <p className="mt-1.5 text-xs leading-5 text-[#aaa]">
+                            Discord shares only your verified user ID and
+                            profile. Tebex uses it for Discord purchase actions;
+                            your CFX account remains the main purchaser account.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="button-primary mt-4 w-full bg-[#5865f2]!"
+                        onClick={() => void continueWithDiscord()}
+                        disabled={discordPending}
+                      >
+                        {discordPending ? (
+                          <LoaderCircle
+                            size={18}
+                            strokeWidth={2.2}
+                            className="animate-spin"
+                          />
+                        ) : (
+                          <ShieldCheck size={18} strokeWidth={2.2} />
+                        )}
+                        {discordPending
+                          ? "Opening Discord..."
+                          : "Continue with Discord"}
+                      </button>
+                      <button
+                        type="button"
+                        className="mt-3 w-full text-xs font-semibold text-[#999] transition-colors hover:text-white"
+                        onClick={() => setDiscordPrompt(false)}
+                        disabled={discordPending}
+                      >
+                        Not now
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="button-primary mt-4 w-full"
+                      onClick={() => checkout.mutate()}
+                      disabled={checkout.isPending}
+                    >
+                      {checkout.isPending ? (
+                        <LoaderCircle
+                          size={18}
+                          strokeWidth={2.2}
+                          className="animate-spin"
+                        />
+                      ) : (
+                        <LockKeyhole size={18} strokeWidth={2.2} />
+                      )}
+                      <span>
+                        {checkout.isPending
+                          ? "Preparing checkout…"
+                          : "Secure checkout"}
+                      </span>
+                      <ArrowRight size={17} strokeWidth={2.2} />
+                    </button>
+                  )}
                   <p className="mt-3 text-center text-[11px] leading-4 text-[#777]">
                     Checkout and payment are securely handled by Tebex.
                   </p>
