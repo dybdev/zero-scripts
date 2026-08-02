@@ -17,13 +17,26 @@ export async function POST(request: Request) {
 
   try {
     const adapter = getCatalogueAdapter();
-    const returnUrl = `${env.NEXT_PUBLIC_SITE_URL}/?authenticated=true`;
+    const body = (await request.json().catch(() => null)) as {
+      returnTo?: unknown;
+    } | null;
+    const returnTo =
+      typeof body?.returnTo === "string" &&
+      body.returnTo.startsWith("/") &&
+      !body.returnTo.startsWith("//")
+        ? body.returnTo
+        : "/";
+    const returnUrl = new URL(returnTo, env.NEXT_PUBLIC_SITE_URL);
+    returnUrl.searchParams.set("authenticated", "cfx");
     const basket = await adapter.createBasket({
       completeUrl: `${env.NEXT_PUBLIC_SITE_URL}/?checkout=complete`,
       cancelUrl: `${env.NEXT_PUBLIC_SITE_URL}/`,
       ipAddress: getRequestIpv4(request),
     });
-    const links = await adapter.getAuthenticationLinks(basket.ident, returnUrl);
+    const links = await adapter.getAuthenticationLinks(
+      basket.ident,
+      returnUrl.toString(),
+    );
     const preferred = links.find((link) => /fivem|cfx/i.test(link.name));
 
     if (!preferred) {

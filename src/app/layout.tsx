@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import { SmoothScroll } from "@/components/ui/smooth-scroll";
 import { env } from "@/lib/env";
+import { readDiscordSession } from "@/lib/discord-auth";
 import { getCatalogueAdapter } from "@/lib/tebex/client";
 import type { BuyerIdentity } from "@/lib/tebex/types";
 import { QueryProvider } from "@/providers/query-provider";
@@ -68,6 +69,9 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   let buyer: BuyerIdentity | null = null;
   const cookieStore = await cookies();
+  const discordVerified = Boolean(
+    readDiscordSession(cookieStore.get("zero_discord_session")?.value),
+  );
   if (env.TEBEX_DATA_SOURCE === "tebex") {
     const basketId = cookieStore.get("zero_tebex_basket")?.value;
     const hasCfxIdentity =
@@ -85,7 +89,10 @@ export default async function RootLayout({
     <html lang="en" className={poppins.variable}>
       <body>
         <QueryProvider>
-          <AuthProvider authenticated={Boolean(buyer)}>
+          <AuthProvider
+            authenticated={Boolean(buyer)}
+            discordVerified={discordVerified}
+          >
             <SmoothScroll />
             <SiteHeader buyer={buyer} />
             <main>{children}</main>

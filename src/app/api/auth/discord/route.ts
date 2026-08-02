@@ -36,7 +36,7 @@ export function GET(request: NextRequest) {
   return response;
 }
 
-export function POST() {
+export async function POST(request: NextRequest) {
   if (!env.DISCORD_CLIENT_ID || !env.DISCORD_CLIENT_SECRET) {
     return NextResponse.json(
       {
@@ -62,12 +62,29 @@ export function POST() {
     ...cookieOptions,
     maxAge: 10 * 60,
   });
+  const body = (await request.json().catch(() => null)) as {
+    returnTo?: unknown;
+  } | null;
+  const returnTo =
+    typeof body?.returnTo === "string" &&
+    body.returnTo.startsWith("/") &&
+    !body.returnTo.startsWith("//")
+      ? body.returnTo
+      : "/";
+  response.cookies.set("zero_discord_return_to", returnTo, {
+    ...cookieOptions,
+    maxAge: 10 * 60,
+  });
   return response;
 }
 
 export function DELETE() {
   const response = NextResponse.json({ signedOut: true });
-  for (const name of ["zero_discord_session", "zero_discord_state"]) {
+  for (const name of [
+    "zero_discord_session",
+    "zero_discord_state",
+    "zero_discord_return_to",
+  ]) {
     response.cookies.set(name, "", { ...cookieOptions, maxAge: 0 });
   }
   return response;

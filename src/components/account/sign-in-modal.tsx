@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Gamepad2,
-  LoaderCircle,
-  MessageCircle,
-  ShieldCheck,
-  X,
-} from "lucide-react";
+import { Gamepad2, LoaderCircle, ShieldCheck, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
@@ -23,12 +17,18 @@ export function SignInModal({
 }) {
   const close = useCallback(() => onClose(), [onClose]);
   const ref = useOverlay(open, close);
-  const [loading, setLoading] = useState<"cfx" | "discord" | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const startCfxSignIn = async () => {
-    setLoading("cfx");
+    setLoading(true);
     try {
-      const response = await fetch("/api/tebex/auth", { method: "POST" });
+      const response = await fetch("/api/tebex/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          returnTo: `${window.location.pathname}${window.location.search}`,
+        }),
+      });
       const body = (await response.json()) as {
         authUrl?: string;
         message?: string;
@@ -43,31 +43,7 @@ export function SignInModal({
           ? error.message
           : "Sign in could not be started.",
       );
-      setLoading(null);
-    }
-  };
-
-  const startDiscordSignIn = async () => {
-    setLoading("discord");
-    try {
-      const response = await fetch("/api/auth/discord", { method: "POST" });
-      const body = (await response.json()) as {
-        authUrl?: string;
-        message?: string;
-      };
-      if (!response.ok || !body.authUrl) {
-        throw new Error(
-          body.message ?? "Discord sign in could not be started.",
-        );
-      }
-      window.location.assign(body.authUrl);
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Discord sign in could not be started.",
-      );
-      setLoading(null);
+      setLoading(false);
     }
   };
 
@@ -118,17 +94,18 @@ export function SignInModal({
                 Sign in to Zero Scripts
               </h2>
               <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[var(--neutral-400)]">
-                Choose how you want to identify yourself. CFX is required by
-                Tebex when you check out a FiveM resource.
+                Connect your CFX account as the primary FiveM purchaser
+                identity. Discord verification is requested only when you add a
+                product to your bag.
               </p>
             </div>
             <button
               type="button"
               onClick={() => void startCfxSignIn()}
-              disabled={loading !== null}
+              disabled={loading}
               className="button-primary button-solid-red mt-7 w-full"
             >
-              {loading === "cfx" ? (
+              {loading ? (
                 <LoaderCircle
                   size={18}
                   strokeWidth={2.2}
@@ -137,26 +114,7 @@ export function SignInModal({
               ) : (
                 <Gamepad2 size={18} strokeWidth={2.2} />
               )}
-              {loading === "cfx" ? "Redirecting..." : "Continue with CFX"}
-            </button>
-            <button
-              type="button"
-              onClick={() => void startDiscordSignIn()}
-              disabled={loading !== null}
-              className="button-secondary mt-3 w-full"
-            >
-              {loading === "discord" ? (
-                <LoaderCircle
-                  size={18}
-                  strokeWidth={2.2}
-                  className="animate-spin"
-                />
-              ) : (
-                <MessageCircle size={18} strokeWidth={2.2} />
-              )}
-              {loading === "discord"
-                ? "Redirecting..."
-                : "Continue with Discord"}
+              {loading ? "Redirecting..." : "Continue with CFX"}
             </button>
             <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs text-[#777]">
               <ShieldCheck
@@ -164,7 +122,7 @@ export function SignInModal({
                 strokeWidth={2}
                 className="text-[var(--brand-red-light)]"
               />
-              Authentication happens on the official CFX or Discord website.
+              Authentication happens on the official CFX website.
             </p>
           </motion.section>
         </>

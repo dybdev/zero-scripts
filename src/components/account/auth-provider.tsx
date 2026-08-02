@@ -12,6 +12,7 @@ import { SignInModal } from "./sign-in-modal";
 
 interface AuthContextValue {
   authenticated: boolean;
+  discordVerified: boolean;
   requestSignIn: () => void;
 }
 
@@ -19,25 +20,24 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({
   authenticated,
+  discordVerified,
   children,
 }: {
   authenticated: boolean;
+  discordVerified: boolean;
   children: React.ReactNode;
 }) {
   const [signInOpen, setSignInOpen] = useState(false);
   const requestSignIn = useCallback(() => setSignInOpen(true), []);
   const value = useMemo(
-    () => ({ authenticated, requestSignIn }),
-    [authenticated, requestSignIn],
+    () => ({ authenticated, discordVerified, requestSignIn }),
+    [authenticated, discordVerified, requestSignIn],
   );
 
   return (
     <AuthContext.Provider value={value}>
       {children}
-      <SignInModal
-        open={signInOpen}
-        onClose={() => setSignInOpen(false)}
-      />
+      <SignInModal open={signInOpen} onClose={() => setSignInOpen(false)} />
     </AuthContext.Provider>
   );
 }

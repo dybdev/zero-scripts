@@ -13,8 +13,13 @@ interface DiscordUser {
   global_name?: string | null;
 }
 
-function returnToSite(error?: string) {
-  const url = new URL("/", env.NEXT_PUBLIC_SITE_URL);
+function returnToSite(request: NextRequest, error?: string) {
+  const storedReturnTo = request.cookies.get("zero_discord_return_to")?.value;
+  const returnTo =
+    storedReturnTo?.startsWith("/") && !storedReturnTo.startsWith("//")
+      ? storedReturnTo
+      : "/";
+  const url = new URL(returnTo, env.NEXT_PUBLIC_SITE_URL);
   if (error) url.searchParams.set("auth_error", error);
   else url.searchParams.set("authenticated", "discord");
   return url;
@@ -25,10 +30,14 @@ export async function GET(request: NextRequest) {
   const state = request.nextUrl.searchParams.get("state");
   const expectedState = request.cookies.get("zero_discord_state")?.value;
   if (!code || !state || !expectedState || state !== expectedState) {
-    return NextResponse.redirect(returnToSite("discord_state_invalid"));
+    return NextResponse.redirect(
+      returnToSite(request, "discord_state_invalid"),
+    );
   }
   if (!env.DISCORD_CLIENT_ID || !env.DISCORD_CLIENT_SECRET) {
-    return NextResponse.redirect(returnToSite("discord_not_configured"));
+    return NextResponse.redirect(
+      returnToSite(request, "discord_not_configured"),
+    );
   }
 
   try {
@@ -57,7 +66,7 @@ export async function GET(request: NextRequest) {
     if (!userResponse.ok || !user.id || !user.username)
       throw new Error("profile request failed");
 
-    const response = NextResponse.redirect(returnToSite());
+    const response = NextResponse.redirect(returnToSite(request));
     response.cookies.set(
       "zero_discord_session",
       createDiscordSession(user.id, user.global_name?.trim() || user.username),
@@ -76,9 +85,16 @@ export async function GET(request: NextRequest) {
       path: "/",
       maxAge: 0,
     });
+    response.cookies.set("zero_discord_return_to", "", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 0,
+    });
     return response;
   } catch (error) {
     console.error("Discord authentication failed", error);
-    return NextResponse.redirect(returnToSite("discord_failed"));
+    return NextResponse.redirect(returnToSite(request, "discord_failed"));
   }
 }
