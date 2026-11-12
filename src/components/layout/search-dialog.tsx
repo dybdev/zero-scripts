@@ -58,7 +58,7 @@ export function SearchDialog({
         <>
           <motion.button
             type="button"
-            className="fixed inset-0 z-80 bg-black/70 backdrop-blur-md"
+            className="fixed inset-0 z-80 bg-black/70"
             aria-label="Close search"
             onClick={close}
             initial={{ opacity: 0 }}
@@ -70,7 +70,7 @@ export function SearchDialog({
             role="dialog"
             aria-modal="true"
             aria-labelledby="search-title"
-            className="fixed top-[8vh] left-1/2 z-90 w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 overflow-hidden rounded-[16px] border border-white/10 bg-[#151515]/98 shadow-2xl"
+            className="fixed top-[8vh] left-1/2 z-90 w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 overflow-hidden rounded-[6px] border border-white/10 bg-[#151515]/98 shadow-2xl"
             initial={{ opacity: 0, y: -8, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.99 }}
@@ -120,7 +120,7 @@ export function SearchDialog({
                     key={product.id}
                     href={`/store/package/${product.slug}`}
                     onClick={close}
-                    className="flex min-h-14 items-center justify-between gap-4 rounded-xl px-3 py-2 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-[var(--brand-red)] focus-visible:outline-none"
+                    className="flex min-h-14 items-center justify-between gap-4 rounded-[3px] px-3 py-2 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-[var(--brand-red)] focus-visible:outline-none"
                   >
                     <span>
                       <span className="block text-sm font-bold text-white">

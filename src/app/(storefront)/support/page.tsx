@@ -100,7 +100,7 @@ export default function SupportPage() {
         </div>
       </div>
 
-      <section className="mt-16 rounded-[14px] border border-white/8 bg-[#151515] p-6 sm:p-8">
+      <section className="mt-16 rounded-[6px] border border-white/8 bg-[#151515] p-6 sm:p-8">
         <h2 className="text-xl font-bold text-white">
           Before opening a request
         </h2>

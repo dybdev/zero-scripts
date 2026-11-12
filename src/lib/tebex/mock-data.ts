@@ -32,8 +32,8 @@ export const mockProducts: Product[] = [
     description:
       "A complete competitive racing system with crews, events, and live timing.",
     price: 39.99,
-    image: "/brand/logo-zero.png",
-    gallery: ["/brand/logo-zero.png"],
+    image: "",
+    gallery: [],
     status: "Updated",
     version: "2.4.1",
     compatibility: ["Qbox", "QBCore", "ESX"],
@@ -63,8 +63,8 @@ export const mockProducts: Product[] = [
     description:
       "Fast, auditable staff tools with granular permissions and secure actions.",
     price: 29.99,
-    image: "/brand/logo-zero.png",
-    gallery: ["/brand/logo-zero.png"],
+    image: "",
+    gallery: [],
     status: "Stable",
     version: "1.9.0",
     compatibility: ["Standalone", "ACE"],
@@ -94,8 +94,8 @@ export const mockProducts: Product[] = [
     description:
       "A focused dispatch layer with smart routing and configurable alerts.",
     price: 24.99,
-    image: "/brand/logo-zero.png",
-    gallery: ["/brand/logo-zero.png"],
+    image: "",
+    gallery: [],
     status: "New",
     version: "1.2.0",
     compatibility: ["Qbox", "QBCore", "ESX"],
@@ -125,8 +125,8 @@ export const mockProducts: Product[] = [
     description:
       "A typed integration layer for inventory, stashes, and item metadata.",
     price: 14.99,
-    image: "/brand/logo-zero.png",
-    gallery: ["/brand/logo-zero.png"],
+    image: "",
+    gallery: [],
     status: "Stable",
     version: "3.1.2",
     compatibility: ["Qbox", "ox_inventory"],
@@ -156,8 +156,8 @@ export const mockProducts: Product[] = [
     description:
       "Contextual world interactions that stay responsive at server scale.",
     price: 19.99,
-    image: "/brand/logo-zero.png",
-    gallery: ["/brand/logo-zero.png"],
+    image: "",
+    gallery: [],
     version: "2.0.3",
     compatibility: ["Standalone", "Qbox", "ESX"],
     features: [
@@ -186,8 +186,8 @@ export const mockProducts: Product[] = [
     description:
       "Production-ready primitives for callbacks, state, logging, and config.",
     price: 0,
-    image: "/brand/logo-zero.png",
-    gallery: ["/brand/logo-zero.png"],
+    image: "",
+    gallery: [],
     status: "Stable",
     version: "4.0.0",
     compatibility: ["Standalone"],
@@ -217,8 +217,8 @@ export const mockProducts: Product[] = [
     description:
       "Flexible public, private, and job garage flows with clean state handling.",
     price: 26.99,
-    image: "/brand/logo-zero.png",
-    gallery: ["/brand/logo-zero.png"],
+    image: "",
+    gallery: [],
     status: "Updated",
     version: "2.8.5",
     compatibility: ["Qbox", "QBCore"],
@@ -248,8 +248,8 @@ export const mockProducts: Product[] = [
     description:
       "A lightweight timing foundation for time trials and community events.",
     price: 9.99,
-    image: "/brand/logo-zero.png",
-    gallery: ["/brand/logo-zero.png"],
+    image: "",
+    gallery: [],
     status: "New",
     version: "1.0.1",
     compatibility: ["Standalone"],
@@ -279,8 +279,8 @@ export const mockProducts: Product[] = [
     description:
       "A secure property system for residences, access management, storage, and configurable interiors.",
     price: 34.99,
-    image: "/brand/logo-zero.png",
-    gallery: ["/brand/logo-zero.png"],
+    image: "",
+    gallery: [],
     status: "New",
     version: "1.1.0",
     compatibility: ["Qbox", "QBCore", "ESX"],

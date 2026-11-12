@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
-import { Poppins } from "next/font/google";
 
 import { BasketDrawer } from "@/components/basket/basket-drawer";
 import { AuthProvider } from "@/components/account/auth-provider";
@@ -12,17 +11,13 @@ import { env } from "@/lib/env";
 import { readDiscordSession } from "@/lib/discord-auth";
 import { getCatalogueAdapter } from "@/lib/tebex/client";
 import type { BuyerIdentity } from "@/lib/tebex/types";
+import { MotionProvider } from "@/providers/motion-provider";
 import { QueryProvider } from "@/providers/query-provider";
 
+import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource-variable/chivo-mono";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
-
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -86,20 +81,22 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="en">
       <body>
         <QueryProvider>
-          <AuthProvider
-            authenticated={Boolean(buyer)}
-            discordVerified={discordVerified}
-          >
-            <SmoothScroll />
-            <SiteHeader buyer={buyer} />
-            <main>{children}</main>
-            <SiteFooter />
-            <BasketDrawer />
-            <ToastProvider />
-          </AuthProvider>
+          <MotionProvider>
+            <AuthProvider
+              authenticated={Boolean(buyer)}
+              discordVerified={discordVerified}
+            >
+              <SmoothScroll />
+              <SiteHeader buyer={buyer} />
+              <main>{children}</main>
+              <SiteFooter />
+              <BasketDrawer />
+              <ToastProvider />
+            </AuthProvider>
+          </MotionProvider>
         </QueryProvider>
       </body>
     </html>

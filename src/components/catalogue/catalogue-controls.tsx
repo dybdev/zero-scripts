@@ -1,10 +1,12 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import type { Category } from "@/lib/tebex/types";
+import { cn } from "@/lib/utils";
 
 export function CatalogueControls({
   categories,
@@ -22,39 +24,41 @@ export function CatalogueControls({
     return `/store${params.size ? `?${params.toString()}` : ""}`;
   };
 
+  const tabs = [{ slug: "", name: "All" }, ...categories];
+
   return (
-    <div className="space-y-7">
+    <div className="flex flex-col gap-5 border-b border-[var(--line)] md:flex-row md:items-end md:justify-between">
       <nav
         aria-label="Product categories"
-        className="flex gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:justify-center sm:overflow-visible"
+        className="-mb-px flex gap-1 overflow-x-auto"
       >
-        <Link
-          href={categoryHref("")}
-          className={
-            initial.category
-              ? "button-secondary min-h-11 shrink-0"
-              : "button-primary min-h-11 shrink-0"
-          }
-        >
-          All
-        </Link>
-        {categories.map((category) => (
-          <Link
-            key={category.id}
-            href={categoryHref(category.slug)}
-            className={
-              initial.category === category.slug
-                ? "button-primary min-h-11 shrink-0"
-                : "button-secondary min-h-11 shrink-0"
-            }
-          >
-            {category.name}
-          </Link>
-        ))}
+        {tabs.map((tab) => {
+          const active = initial.category === tab.slug;
+          return (
+            <Link
+              key={tab.slug || "all"}
+              href={categoryHref(tab.slug)}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "nav-link shrink-0 pb-1",
+                active && "nav-link-active",
+              )}
+            >
+              {tab.name}
+              {active ? (
+                <motion.span
+                  layoutId="category-underline"
+                  className="absolute inset-x-[0.9rem] bottom-0 h-[2px] bg-[var(--brand-red)]"
+                  transition={{ type: "spring", stiffness: 420, damping: 36 }}
+                />
+              ) : null}
+            </Link>
+          );
+        })}
       </nav>
 
       <form
-        className="relative w-full sm:w-[calc((100%-1.25rem)/2)] xl:w-[calc((100%-2.5rem)/3)]"
+        className="relative mb-4 w-full md:w-80"
         onSubmit={(event) => {
           event.preventDefault();
           const data = new FormData(event.currentTarget);
@@ -69,17 +73,17 @@ export function CatalogueControls({
           Search products
         </label>
         <Search
-          size={17}
+          size={16}
           strokeWidth={2}
-          className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-[var(--brand-red-light)]"
+          className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-[var(--neutral-400)]"
         />
         <input
           id="catalogue-search"
           name="q"
           type="search"
           defaultValue={initial.query}
-          placeholder="Search resources..."
-          className="field h-12 w-full pr-4! pl-11!"
+          placeholder="search resources"
+          className="field h-11 w-full pr-4! pl-10!"
         />
       </form>
     </div>

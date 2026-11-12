@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { ArrowUpRight, Tag } from "lucide-react";
 
 import type { Product } from "@/lib/tebex/types";
 import { cn } from "@/lib/utils";
 
 import { AddToBasketButton } from "./add-to-basket-button";
-import { CompatibilityBadge } from "./compatibility-badge";
 import { ProductArtwork } from "./product-artwork";
 import { ProductPrice } from "./product-price";
 
@@ -18,65 +16,60 @@ export function ProductCard({
   large?: boolean;
   showCategoryLabel?: boolean;
 }) {
+  const href = `/store/package/${product.slug}`;
+
   return (
-    <article className="product-card group flex min-w-0 transform-gpu flex-col overflow-hidden rounded-[14px] border border-white/8 bg-[#151515] shadow-[0_8px_24px_rgba(0,0,0,0)] transition-[transform,border-color,box-shadow] duration-500 ease-[cubic-bezier(.22,1,.36,1)] will-change-transform hover:-translate-y-1 hover:border-white/16 hover:shadow-[0_24px_64px_rgba(0,0,0,.32)]">
+    <article className="product-card group flex min-w-0 flex-col overflow-hidden">
       <Link
-        href={`/store/package/${product.slug}`}
+        href={href}
         className={cn(
-          "relative overflow-hidden bg-[#101010] focus-visible:ring-2 focus-visible:ring-[var(--brand-red)] focus-visible:outline-none focus-visible:ring-inset",
-          large ? "aspect-[1.55/1]" : "aspect-[1.45/1]",
+          "relative block overflow-hidden bg-[var(--background)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foreground)]",
+          large ? "aspect-[1.5/1]" : "aspect-[1.4/1]",
+        )}
+      >
+        <ProductArtwork
+          product={product}
+          className="product-card-image h-full w-full"
+        />
+      </Link>
+      <div
+        className={cn(
+          "flex flex-1 flex-col border-t border-[var(--line)]",
+          large ? "p-6" : "p-5",
         )}
       >
         {showCategoryLabel ? (
-          <span className="absolute top-3 left-3 z-10 rounded-md border border-white/12 bg-black/80 px-2.5 py-1 text-[10px] font-extrabold tracking-[0.13em] text-white uppercase shadow-lg backdrop-blur-md">
-            {product.category}
-          </span>
+          <p className="note lowercase">{product.category}</p>
         ) : null}
-        <ProductArtwork
-          product={product}
-          className="h-full w-full transform-gpu transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] will-change-transform group-hover:scale-[1.025]"
-        />
-      </Link>
-      <div className={cn("flex flex-1 flex-col", large ? "p-6" : "p-5")}>
-        <Link
-          href={`/store/package/${product.slug}`}
-          className="flex items-start justify-between gap-3 rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--brand-red)] focus-visible:outline-none"
+        <h3
+          className={cn(
+            "text-white",
+            showCategoryLabel && "mt-2",
+            large ? "text-[1.85rem]" : "text-[1.6rem]",
+          )}
         >
-          <h3
-            className={cn(
-              "font-bold tracking-[-0.02em] text-white transition-colors duration-300 group-hover:text-[var(--brand-red-light)]",
-              large ? "text-xl" : "text-lg",
-            )}
+          <Link
+            href={href}
+            className="link-draw focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foreground)]"
           >
             {product.name}
-          </h3>
-          <ArrowUpRight
-            size={16}
-            strokeWidth={2}
-            className="mt-0.5 shrink-0 text-[#666] transition-[color,transform] duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white"
-          />
-        </Link>
-        <div className="mt-5 flex flex-wrap gap-2">
-          {product.compatibility.map((framework) => (
-            <CompatibilityBadge key={framework} label={framework} />
-          ))}
-        </div>
-        <div className="mt-auto pt-6">
-          <p className="text-sm font-semibold text-[var(--neutral-400)]">
-            Price
+          </Link>
+        </h3>
+        {product.compatibility.length ? (
+          <p className="note mt-3 lowercase">
+            {product.compatibility.join(" / ")}
           </p>
-          <div className="mt-2 flex items-center gap-2 text-[var(--brand-red-light)]">
-            <Tag size={23} strokeWidth={2.2} aria-hidden />
-            <ProductPrice
-              amount={product.price}
-              currency={product.currency}
-              className="text-2xl"
-            />
-          </div>
+        ) : null}
+        <div className="mt-auto flex items-center justify-between gap-4 pt-7">
+          <ProductPrice
+            amount={product.price}
+            currency={product.currency}
+            className="text-lg"
+          />
           <AddToBasketButton
             product={product}
             fullLabel
-            className="button-solid-red mt-5 w-full"
+            className="button-secondary min-h-11 px-4"
           />
         </div>
       </div>

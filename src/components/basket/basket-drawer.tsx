@@ -144,7 +144,7 @@ export function BasketDrawer() {
           <motion.button
             type="button"
             aria-label="Close basket"
-            className="fixed inset-0 z-60 cursor-default bg-black/65 backdrop-blur-sm"
+            className="fixed inset-0 z-60 cursor-default bg-black/65"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -156,15 +156,18 @@ export function BasketDrawer() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="basket-title"
-            className="fixed top-0 right-0 z-70 flex h-dvh w-full flex-col border-l border-white/10 bg-[#111] shadow-[-30px_0_80px_rgba(0,0,0,.45)] sm:max-w-[480px]"
+            className="fixed top-0 right-0 z-70 flex h-dvh w-full flex-col border-l border-[var(--line-strong)] bg-[var(--surface)] shadow-[-30px_0_80px_rgba(0,0,0,.45)] sm:max-w-[480px]"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="flex min-h-20 shrink-0 items-center justify-between border-b border-white/8 px-5 sm:px-6">
               <div>
-                <p id="basket-title" className="text-xl font-bold text-white">
+                <p
+                  id="basket-title"
+                  className="font-display text-3xl leading-none text-white"
+                >
                   Your basket
                 </p>
                 <p className="mt-0.5 text-sm text-[var(--neutral-400)]">
@@ -183,7 +186,7 @@ export function BasketDrawer() {
 
             {items.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
-                <div className="grid size-16 place-items-center rounded-2xl border border-white/8 bg-[#171717]">
+                <div className="grid size-16 place-items-center rounded-[6px] border border-white/8 bg-[#171717]">
                   <ShoppingBag
                     size={30}
                     strokeWidth={1.8}
@@ -220,62 +223,74 @@ export function BasketDrawer() {
                       Clear basket
                     </button>
                   </div>
-                  {items.map(({ product, quantity }) => (
-                    <article
-                      key={product.id}
-                      className="flex gap-4 rounded-[12px] border border-white/8 bg-[#161616] p-3.5"
-                    >
-                      <Link
-                        href={`/store/package/${product.slug}`}
-                        onClick={close}
-                        className="shrink-0 rounded-lg focus-visible:ring-2 focus-visible:ring-[var(--brand-red)] focus-visible:outline-none"
+                  <AnimatePresence initial={false}>
+                    {items.map(({ product, quantity }) => (
+                      <motion.article
+                        key={product.id}
+                        layout
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{
+                          opacity: 0,
+                          x: 32,
+                          transition: { duration: 0.22 },
+                        }}
+                        className="flex gap-4 rounded-[6px] border border-[var(--line)] bg-[var(--background)] p-3.5"
                       >
-                        <ProductArtwork
-                          product={product}
-                          className="h-24 w-28 rounded-lg"
-                        />
-                      </Link>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <Link
-                              href={`/store/package/${product.slug}`}
-                              onClick={close}
-                              className="line-clamp-2 text-sm leading-5 font-bold text-white hover:text-[var(--brand-red-light)]"
+                        <Link
+                          href={`/store/package/${product.slug}`}
+                          onClick={close}
+                          className="shrink-0 rounded-lg focus-visible:ring-2 focus-visible:ring-[var(--brand-red)] focus-visible:outline-none"
+                        >
+                          <ProductArtwork
+                            product={product}
+                            className="h-24 w-28 rounded-[3px]"
+                          />
+                        </Link>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <Link
+                                href={`/store/package/${product.slug}`}
+                                onClick={close}
+                                className="font-display line-clamp-2 text-xl leading-tight text-white hover:text-[var(--brand-red-light)]"
+                              >
+                                {product.name}
+                              </Link>
+                              <p className="mt-1 text-xs text-[#888]">
+                                {product.category}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeItem(product.id)}
+                              className="icon-button h-11! w-11! shrink-0 border-0! bg-transparent!"
+                              aria-label={`Remove ${product.name}`}
                             >
-                              {product.name}
-                            </Link>
-                            <p className="mt-1 text-xs text-[#888]">
-                              {product.category}
-                            </p>
+                              <Trash2 size={15} strokeWidth={2} />
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => removeItem(product.id)}
-                            className="icon-button h-11! w-11! shrink-0 border-0! bg-transparent!"
-                            aria-label={`Remove ${product.name}`}
-                          >
-                            <Trash2 size={15} strokeWidth={2} />
-                          </button>
-                        </div>
-                        <div className="mt-3 flex items-center justify-between">
-                          {product.quantitySupported ? (
-                            <QuantityControl
-                              quantity={quantity}
-                              onChange={(next) => setQuantity(product.id, next)}
-                            />
-                          ) : (
-                            <span className="text-[10px] font-semibold text-[#777] uppercase">
-                              Single license
+                          <div className="mt-3 flex items-center justify-between">
+                            {product.quantitySupported ? (
+                              <QuantityControl
+                                quantity={quantity}
+                                onChange={(next) =>
+                                  setQuantity(product.id, next)
+                                }
+                              />
+                            ) : (
+                              <span className="text-[10px] font-semibold text-[#777] uppercase">
+                                Single license
+                              </span>
+                            )}
+                            <span className="font-mono text-sm text-white tabular-nums">
+                              {formatPrice(product.price * quantity)}
                             </span>
-                          )}
-                          <span className="text-sm font-bold text-white tabular-nums">
-                            {formatPrice(product.price * quantity)}
-                          </span>
+                          </div>
                         </div>
-                      </div>
-                    </article>
-                  ))}
+                      </motion.article>
+                    ))}
+                  </AnimatePresence>
                 </div>
                 <div className="shrink-0 border-t border-white/8 bg-[#151515] p-5 sm:p-6">
                   <form
@@ -312,7 +327,7 @@ export function BasketDrawer() {
                     <span className="text-sm text-[var(--neutral-400)]">
                       Subtotal
                     </span>
-                    <span className="text-2xl font-bold text-white tabular-nums">
+                    <span className="font-mono text-2xl text-white tabular-nums">
                       {formatPrice(subtotal)}
                     </span>
                   </div>
@@ -330,7 +345,7 @@ export function BasketDrawer() {
                     </p>
                   ) : null}
                   {discordPrompt ? (
-                    <div className="mt-4 rounded-[12px] border border-[#5865f2]/35 bg-[#5865f2]/10 p-4">
+                    <div className="mt-4 rounded-[6px] border border-[#5865f2]/35 bg-[#5865f2]/10 p-4">
                       <div className="flex items-start gap-3">
                         <MessageCircle
                           size={20}

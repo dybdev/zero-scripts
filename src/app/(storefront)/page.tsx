@@ -1,40 +1,33 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  BookOpenText,
-  Braces,
-  Cable,
-  Gauge,
-  ShieldCheck,
-  ShoppingBag,
-} from "lucide-react";
 
+import { HeroEntrance } from "@/components/motion/hero-entrance";
+import { ProductArtwork } from "@/components/product/product-artwork";
 import { ProductGrid } from "@/components/product/product-grid";
+import { ProductPrice } from "@/components/product/product-price";
 import { FaqAccordion } from "@/components/ui/faq-accordion";
-import { ReviewMarquee } from "@/components/ui/review-marquee";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { getCatalogueAdapter } from "@/lib/tebex/client";
 
-const trustItems = [
+const principles = [
   {
-    title: "Optimized resources",
-    description: "Predictable client and server paths under real load.",
-    icon: Gauge,
+    title: "Built for load",
+    description:
+      "Client and server paths stay predictable under real player load.",
   },
   {
-    title: "Secure validation",
-    description: "Sensitive actions stay authoritative on the server.",
-    icon: ShieldCheck,
+    title: "Server decides",
+    description:
+      "Money, items and damage are validated on the server. The client only asks.",
   },
   {
-    title: "Framework ready",
-    description: "Clear Qbox, QBCore, ESX, and standalone adapters.",
-    icon: Cable,
+    title: "Any framework",
+    description:
+      "Bridges for Qbox, QBCore and ESX, or run it standalone with no framework at all.",
   },
   {
-    title: "Maintained guides",
-    description: "Versioned setup, exports, and upgrade notes.",
-    icon: BookOpenText,
+    title: "Documented",
+    description:
+      "Every release ships with setup steps, exports and upgrade notes for that version.",
   },
 ];
 
@@ -67,162 +60,134 @@ export default async function HomePage() {
   const featured = (
     explicitlyFeatured.length ? explicitlyFeatured : products
   ).slice(0, 3);
+  const spotlight = featured[0];
 
   return (
     <>
-      <section className="site-grid relative flex min-h-[700px] items-center overflow-hidden">
-        <div className="hero-grid pointer-events-none absolute inset-0" />
-        <div className="content-shell relative px-4 py-24 text-center sm:px-6 lg:px-8">
-          <div className="mx-auto inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/9 bg-[#111]/80 px-4 text-sm font-semibold text-[#bbb] backdrop-blur-md">
-            <Braces
-              size={15}
-              strokeWidth={2}
-              className="text-[var(--brand-red-light)]"
-            />
-            Production-ready FiveM resources
-          </div>
-          <h1 className="mx-auto mt-8 max-w-6xl text-[clamp(3rem,7vw,7rem)] leading-[0.96] font-extrabold tracking-[-0.065em] text-white">
-            <span className="sr-only">Premium FiveM scripts.</span>
-            <svg
-              viewBox="0 0 1200 245"
-              role="img"
-              aria-label="Premium FiveM scripts"
-              className="hero-title-outline mx-auto block h-auto w-full overflow-visible"
-            >
-              {[
-                { text: "PREMIUM FIVEM", y: 96 },
-                { text: "SCRIPTS.", y: 218 },
-              ].map((line) => (
-                <g key={line.text}>
-                  <text
-                    x="600"
-                    y={line.y}
-                    textAnchor="middle"
-                    className="hero-title-dashes"
-                  >
-                    {line.text}
-                  </text>
-                  <text
-                    x="600"
-                    y={line.y}
-                    textAnchor="middle"
-                    className="hero-title-gap"
-                  >
-                    {line.text}
-                  </text>
-                  <text
-                    x="600"
-                    y={line.y}
-                    textAnchor="middle"
-                    className="hero-title-fill"
-                  >
-                    {line.text}
-                  </text>
-                </g>
-              ))}
-            </svg>
-            <span className="mt-2 block text-[#858585]">
-              Built without compromise.
-            </span>
-          </h1>
-          <p className="mx-auto mt-8 max-w-3xl text-base leading-8 text-[var(--neutral-400)] sm:text-lg">
-            Performance-first resources with secure server logic, clean
-            framework integrations, and documentation your team can use.
-          </p>
-          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link href="/store" className="button-primary hero-cta px-7">
-              <ShoppingBag size={18} strokeWidth={2.2} />
-              Browse Products
-            </Link>
-            <Link href="/documentation" className="button-secondary px-7">
-              View documentation
-              <BookOpenText size={17} strokeWidth={2} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="content-shell px-4 py-18 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
-          {trustItems.map(({ title, description, icon: Icon }) => (
-            <div key={title} className="flex gap-4">
-              <Icon
-                size={22}
-                strokeWidth={2}
-                className="mt-0.5 shrink-0 text-[var(--brand-red-light)]"
-              />
-              <div>
-                <h2 className="text-base font-bold text-white">{title}</h2>
-                <p className="mt-1.5 text-sm leading-6 text-[var(--neutral-400)]">
-                  {description}
-                </p>
-              </div>
+      <section className="content-shell px-4 sm:px-6 lg:px-8">
+        <div className="grid min-h-[min(calc(100svh-96px),880px)] items-center gap-12 py-14 lg:grid-cols-[1.15fr_.85fr] lg:gap-14">
+          <HeroEntrance>
+            <p className="note">
+              fivem resources · qbox · qbcore · esx · standalone
+            </p>
+            <h1 className="mt-6 text-[clamp(3.25rem,6.6vw,6.75rem)] leading-[0.88] text-white">
+              Premium FiveM scripts,{" "}
+              <span className="mark text-[var(--neutral-400)]">
+                built to survive
+              </span>{" "}
+              real servers.
+            </h1>
+            <p className="mt-8 max-w-xl text-base leading-7 text-[var(--neutral-400)] sm:text-lg sm:leading-8">
+              Server-validated logic, bridges for every major framework, and
+              setup guides your staff can follow without asking.
+            </p>
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <Link href="/store" className="button-primary px-7">
+                Browse the store
+              </Link>
+              <Link href="/documentation" className="button-secondary px-7">
+                Read the docs
+              </Link>
             </div>
-          ))}
+          </HeroEntrance>
+
+          {spotlight ? (
+            <HeroEntrance delay={0.2}>
+              <Link
+                href={`/store/package/${spotlight.slug}`}
+                className="product-card group block overflow-hidden"
+              >
+                <div className="relative aspect-[1.2/1] overflow-hidden bg-[var(--background)]">
+                  <ProductArtwork
+                    product={spotlight}
+                    priority
+                    className="product-card-image h-full w-full"
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-4 border-t border-[var(--line)] p-5">
+                  <span className="font-display text-2xl leading-none text-white">
+                    {spotlight.name}
+                  </span>
+                  <ProductPrice
+                    amount={spotlight.price}
+                    currency={spotlight.currency}
+                    className="text-base"
+                  />
+                </div>
+              </Link>
+            </HeroEntrance>
+          ) : null}
         </div>
       </section>
 
-      <section className="content-shell px-4 pt-16 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-end justify-between gap-6">
+      <section className="border-y border-[var(--line)]">
+        <ol className="content-shell grid px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
+          {principles.map(({ title, description }, index) => (
+            <li
+              key={title}
+              className="border-[var(--line)] py-8 sm:px-6 sm:first:pl-0 sm:even:border-l lg:border-l lg:first:border-l-0"
+            >
+              <span className="index text-sm">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <h2 className="mt-3 text-2xl text-white">{title}</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--neutral-400)]">
+                {description}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="content-shell px-4 pt-28 sm:px-6 lg:px-8">
+        <div className="mb-10 flex items-end justify-between gap-6">
           <SectionHeading
-            eyebrow="Selected releases"
-            title="Featured resources"
-            description="Focused systems built to be configured, extended, and maintained."
+            index="01"
+            title="Featured"
+            eyebrow="current releases"
+            description="Focused systems you can configure, extend and keep running."
           />
           <Link
             href="/store"
-            className="button-secondary hidden! shrink-0 sm:inline-flex!"
+            className="link-draw note hidden shrink-0 pb-1 text-[var(--foreground)] sm:inline"
           >
-            View all
-            <ArrowRight size={16} strokeWidth={2.2} />
+            view all resources
           </Link>
         </div>
         <ProductGrid products={featured} layout="featured" />
       </section>
 
-      <section
-        id="categories"
-        className="content-shell scroll-mt-28 px-4 pt-24 sm:px-6 lg:px-8"
-      >
-        <SectionHeading
-          eyebrow="Community feedback"
-          title="What server owners say"
-          description="A preview of the review experience. Connect verified Tebex or community feedback before launch."
-        />
-        <ReviewMarquee />
-      </section>
-
-      <section className="content-shell px-4 pt-24 sm:px-6 lg:px-8">
-        <div className="grid gap-10 py-12 lg:grid-cols-[.72fr_1.28fr]">
+      <section className="content-shell px-4 pt-32 sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
           <SectionHeading
-            eyebrow="Support"
-            title="Frequently asked questions"
-            description="Quick answers about compatibility, delivery, documentation, and product support."
+            index="02"
+            title="Questions"
+            eyebrow="before you buy"
+            description="Compatibility, delivery, documentation and support."
           />
           <FaqAccordion items={faqs} />
         </div>
       </section>
 
-      <section className="content-shell px-4 pt-24 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-start justify-between gap-7 pb-12 md:flex-row md:items-end">
+      <section className="content-shell px-4 pt-32 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-start justify-between gap-8 border-t border-[var(--line)] pt-12 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-bold tracking-[0.16em] text-[var(--brand-red-light)] uppercase">
-              Ready when you are
-            </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-white">
-              Setup guides without the guesswork.
+            <span className="index text-lg">03</span>
+            <h2 className="mt-3 max-w-3xl text-[clamp(2.5rem,5vw,4.25rem)] text-white">
+              Read the setup guide <span className="mark">before</span>{" "}
+              production.
             </h2>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--neutral-400)]">
-              Review dependencies, configuration, integrations, and upgrade
-              notes before touching production.
+            <p className="mt-4 max-w-xl text-base leading-7 text-[var(--neutral-400)]">
+              Dependencies, configuration, integrations and upgrade notes,
+              versioned with each release.
             </p>
           </div>
           <div className="flex w-full gap-3 sm:w-auto">
             <Link href="/documentation" className="button-primary flex-1">
-              Documentation
+              Open the docs
             </Link>
             <Link href="/support" className="button-secondary flex-1">
-              Support
+              Get support
             </Link>
           </div>
         </div>

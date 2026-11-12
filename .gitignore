@@ -7,3 +7,7 @@ node_modules
 coverage
 .qa
 *.tsbuildinfo
+
+# Agent skills installed with `npx skills add` (large; restore from skills-lock.json)
+.agents/
+.claude/skills/design-taste-frontend
