@@ -67,57 +67,48 @@ export default async function StorePage({
   );
 
   return (
-    <div className="content-shell px-4 pt-12 sm:px-6 lg:px-8">
-      <div className="text-center">
-        <div className="mx-auto max-w-3xl">
-          <p className="text-xs font-bold tracking-[0.16em] text-[var(--brand-red-light)] uppercase">
-            Catalogue
-          </p>
-          <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.045em] text-white sm:text-4xl">
-            Production-ready resources
-          </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[var(--neutral-400)]">
-            Explore focused systems for gameplay, operations, racing, and
-            framework integration.
-          </p>
-        </div>
-        <p className="mt-4 text-xs font-semibold text-[#777] tabular-nums">
+    <div className="content-shell px-4 pt-14 sm:px-6 lg:px-8">
+      <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+        <h1 className="mark text-[clamp(3rem,7vw,5.5rem)] text-white">Store</h1>
+        <span className="note tabular-nums">
           {filtered.length} {filtered.length === 1 ? "resource" : "resources"}
-        </p>
+          {query ? ` matching "${query}"` : ""}
+        </span>
       </div>
-      <div id="categories" className="mt-8 scroll-mt-28">
+      <p className="mt-5 max-w-xl text-base leading-7 text-[var(--neutral-400)]">
+        Gameplay, survival, operations and framework systems for FiveM servers.
+      </p>
+      <div id="categories" className="mt-10 scroll-mt-28">
         <CatalogueControls
           categories={categories}
           initial={{ query, category }}
         />
       </div>
-      <div className="mt-6">
+      <div className="mt-10">
         {!category ? (
-          <div className="space-y-12">
+          <div className="space-y-20">
             {Array.from(groupedProducts.entries()).map(
-              ([groupName, groupProducts]) => (
+              ([groupName, groupProducts], groupIndex) => (
                 <section
                   key={groupName}
                   aria-labelledby={`group-${groupProducts[0].categorySlug}`}
                 >
-                  <div className="mb-5 flex items-end justify-between gap-4 border-b border-white/8 pb-4">
-                    <div>
-                      <p className="text-[10px] font-bold tracking-[0.16em] text-[var(--brand-red-light)] uppercase">
-                        Resource type
-                      </p>
-                      <h2
-                        id={`group-${groupProducts[0].categorySlug}`}
-                        className="mt-1 text-xl font-extrabold tracking-[-0.03em] text-white sm:text-2xl"
-                      >
-                        {groupName}
-                      </h2>
-                    </div>
-                    <p className="text-xs font-semibold text-[#777] tabular-nums">
+                  <div className="mb-6 flex items-baseline gap-4">
+                    <span className="index text-sm">
+                      {String(groupIndex + 1).padStart(2, "0")}
+                    </span>
+                    <h2
+                      id={`group-${groupProducts[0].categorySlug}`}
+                      className="text-4xl text-white"
+                    >
+                      {groupName}
+                    </h2>
+                    <span className="note tabular-nums">
                       {groupProducts.length}{" "}
                       {groupProducts.length === 1 ? "resource" : "resources"}
-                    </p>
+                    </span>
                   </div>
-                  <ProductGrid products={groupProducts} showCategoryLabels />
+                  <ProductGrid products={groupProducts} />
                 </section>
               ),
             )}

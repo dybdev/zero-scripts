@@ -173,7 +173,7 @@ class TebexAdapter implements CatalogueAdapter {
           : typeof categoryValue === "string"
             ? categoryValue
             : "Standalone";
-      const image = String(item.image ?? "/brand/logo-zero.png");
+      const image = typeof item.image === "string" ? item.image : "";
       const media = Array.isArray(item.media)
         ? item.media.flatMap((entry) => {
             if (!entry || typeof entry !== "object") return [];

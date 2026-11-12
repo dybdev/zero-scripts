@@ -38,21 +38,23 @@ export default async function CategoryPage({
     <div className="content-shell px-4 pt-12 sm:px-6 lg:px-8">
       <Link
         href="/store"
-        className="inline-flex min-h-11 items-center gap-2 text-xs font-bold text-[#999] hover:text-white"
+        className="note inline-flex min-h-11 items-center gap-2 hover:text-white"
       >
-        <ArrowLeft size={15} strokeWidth={2.2} />
-        Back to store
+        <ArrowLeft size={14} strokeWidth={2} />
+        back to store
       </Link>
-      <p className="mt-8 text-xs font-bold tracking-[0.16em] text-[var(--brand-red-light)] uppercase">
-        Category
-      </p>
-      <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.045em] text-white sm:text-4xl">
-        {category.name}
-      </h1>
-      <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--neutral-400)]">
+      <div className="mt-6 flex flex-wrap items-baseline gap-x-5 gap-y-2">
+        <h1 className="mark text-[clamp(3rem,7vw,5.5rem)] text-white">
+          {category.name}
+        </h1>
+        <span className="note tabular-nums">
+          {matching.length} {matching.length === 1 ? "resource" : "resources"}
+        </span>
+      </div>
+      <p className="mt-5 max-w-xl text-base leading-7 text-[var(--neutral-400)]">
         {category.description}
       </p>
-      <div className="mt-8">
+      <div className="mt-12">
         <ProductGrid products={matching} />
       </div>
     </div>

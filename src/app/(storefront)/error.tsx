@@ -10,7 +10,7 @@ export default function StorefrontError({
 }) {
   return (
     <div className="content-shell px-4 pt-20 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-lg flex-col items-center rounded-[14px] border border-white/8 bg-[#151515] p-8 text-center">
+      <div className="mx-auto flex max-w-lg flex-col items-center rounded-[6px] border border-white/8 bg-[#151515] p-8 text-center">
         <CircleAlert
           size={34}
           strokeWidth={1.8}

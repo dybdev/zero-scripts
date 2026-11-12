@@ -24,7 +24,7 @@ export function BasketButton() {
     >
       <ShoppingBag size={22} strokeWidth={2.2} />
       {count > 0 ? (
-        <span className="absolute -top-1 -right-1 grid h-5 min-w-5 place-items-center rounded-full bg-white px-1 text-[10px] font-bold text-[var(--brand-red)] tabular-nums">
+        <span className="absolute -top-1 -right-1 grid h-5 min-w-5 place-items-center rounded-[3px] bg-white px-1 font-mono text-[10px] font-medium text-[var(--brand-red)] tabular-nums">
           {count}
         </span>
       ) : null}

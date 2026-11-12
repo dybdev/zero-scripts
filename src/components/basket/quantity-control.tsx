@@ -13,7 +13,7 @@ export function QuantityControl({
 }) {
   return (
     <div
-      className="inline-flex h-11 items-center rounded-[10px] border border-white/10 bg-[#0b0b0b]"
+      className="inline-flex h-11 items-center rounded-[6px] border border-white/10 bg-[#0b0b0b]"
       role="group"
       aria-label="Product quantity"
     >

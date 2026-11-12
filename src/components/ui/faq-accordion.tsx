@@ -12,33 +12,42 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div className="space-y-3">
+    <div className="border-t border-[var(--line)]">
       {items.map(({ question, answer }, index) => {
         const open = openIndex === index;
         const panelId = `faq-panel-${index}`;
         const triggerId = `faq-trigger-${index}`;
 
         return (
-          <div
-            key={question}
-            className="overflow-hidden rounded-[12px] bg-[#151515]"
-          >
+          <div key={question} className="border-b border-[var(--line)]">
             <button
               id={triggerId}
               type="button"
-              className="flex min-h-16 w-full items-center justify-between gap-4 px-5 text-left text-base font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[var(--brand-red)]"
+              className="group flex min-h-18 w-full items-center gap-5 py-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foreground)]"
               aria-expanded={open}
               aria-controls={panelId}
               onClick={() => setOpenIndex(open ? null : index)}
             >
-              <span>{question}</span>
+              <span className="index w-6 shrink-0 text-xs">
+                {String.fromCharCode(97 + index)}
+              </span>
+              <span
+                className={
+                  open
+                    ? "font-display flex-1 text-2xl text-white"
+                    : "font-display flex-1 text-2xl text-[var(--neutral-200)] transition-colors group-hover:text-white"
+                }
+              >
+                {question}
+              </span>
               <motion.span
-                className="text-xl font-medium text-[var(--brand-red-light)]"
+                className="relative grid size-5 shrink-0 place-items-center"
                 animate={{ rotate: open ? 45 : 0 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                transition={{ type: "spring", stiffness: 380, damping: 28 }}
                 aria-hidden
               >
-                +
+                <span className="absolute h-[2px] w-4 bg-[var(--brand-red)]" />
+                <span className="absolute h-4 w-[2px] bg-[var(--brand-red)]" />
               </motion.span>
             </button>
             <AnimatePresence initial={false}>
@@ -51,12 +60,12 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{
-                    height: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
-                    opacity: { duration: 0.18 },
+                    height: { duration: 0.36, ease: [0.22, 1, 0.36, 1] },
+                    opacity: { duration: 0.22 },
                   }}
                   className="overflow-hidden"
                 >
-                  <p className="max-w-2xl px-5 pb-5 text-sm leading-7 text-[var(--neutral-400)]">
+                  <p className="max-w-2xl pb-6 pl-11 text-base leading-7 text-[var(--neutral-400)]">
                     {answer}
                   </p>
                 </motion.div>

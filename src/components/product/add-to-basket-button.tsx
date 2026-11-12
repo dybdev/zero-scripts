@@ -135,22 +135,33 @@ export function AddToBasketButton({
         )}
         aria-label={`Add ${product.name} to bag`}
       >
-        {added ? (
-          <Check size={17} strokeWidth={2.2} aria-hidden />
-        ) : fullLabel ? (
-          <ShoppingBag size={18} strokeWidth={2.2} aria-hidden />
-        ) : (
-          <Plus size={17} strokeWidth={2.2} aria-hidden />
-        )}
-        <span>
-          {added
-            ? "Added"
-            : product.price === 0
-              ? "Get free"
-              : fullLabel
-                ? "Add to bag"
-                : "Add"}
-        </span>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={added ? "added" : "idle"}
+            className="inline-flex items-center gap-2"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {added ? (
+              <Check size={17} strokeWidth={2.2} aria-hidden />
+            ) : fullLabel ? (
+              <ShoppingBag size={17} strokeWidth={2.2} aria-hidden />
+            ) : (
+              <Plus size={17} strokeWidth={2.2} aria-hidden />
+            )}
+            <span>
+              {added
+                ? "Added"
+                : product.price === 0
+                  ? "Get free"
+                  : fullLabel
+                    ? "Add to bag"
+                    : "Add"}
+            </span>
+          </motion.span>
+        </AnimatePresence>
       </button>
       {portalReady
         ? createPortal(
@@ -160,7 +171,7 @@ export function AddToBasketButton({
                   <motion.button
                     type="button"
                     aria-label="Cancel Discord verification"
-                    className="fixed inset-0 z-80 cursor-default bg-black/75 backdrop-blur-sm"
+                    className="fixed inset-0 z-80 cursor-default bg-black/75"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -171,7 +182,7 @@ export function AddToBasketButton({
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby={`discord-product-${product.id}`}
-                    className="fixed inset-x-3 bottom-3 z-90 mx-auto w-[calc(100%-1.5rem)] max-w-lg rounded-[16px] border border-white/10 bg-[#151515] p-6 shadow-[0_-24px_80px_rgba(0,0,0,.55)] sm:bottom-6 sm:p-8"
+                    className="fixed inset-x-3 bottom-3 z-90 mx-auto w-[calc(100%-1.5rem)] max-w-lg rounded-[6px] border border-[var(--line-strong)] bg-[var(--surface)] p-6 shadow-[0_-24px_80px_rgba(0,0,0,.55)] sm:bottom-6 sm:p-8"
                     initial={{ y: "110%", opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: "110%", opacity: 0 }}
@@ -190,7 +201,7 @@ export function AddToBasketButton({
                       </button>
                     </div>
                     <div className="mt-8 text-center">
-                      <div className="mx-auto grid size-14 place-items-center rounded-[12px] bg-[#5865f2] text-white">
+                      <div className="mx-auto grid size-14 place-items-center rounded-[6px] bg-[#5865f2] text-white">
                         <MessageCircle size={27} strokeWidth={2} />
                       </div>
                       <h2

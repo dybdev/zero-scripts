@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { useCallback } from "react";
 
@@ -25,6 +26,7 @@ export function MobileNavigation({
 }) {
   const close = useCallback(() => onClose(), [onClose]);
   const ref = useOverlay(open, close);
+  const pathname = usePathname();
 
   return (
     <AnimatePresence>
@@ -32,7 +34,7 @@ export function MobileNavigation({
         <>
           <motion.button
             type="button"
-            className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm xl:hidden"
+            className="fixed inset-0 z-60 bg-black/75 xl:hidden"
             aria-label="Close navigation"
             onClick={close}
             initial={{ opacity: 0 }}
@@ -42,11 +44,11 @@ export function MobileNavigation({
           <motion.nav
             ref={ref}
             aria-label="Mobile navigation"
-            className="fixed top-0 left-0 z-70 flex h-dvh w-[min(88vw,360px)] flex-col border-r border-white/10 bg-[#111]/97 p-5 backdrop-blur-2xl xl:hidden"
+            className="fixed top-0 left-0 z-70 flex h-dvh w-[min(88vw,380px)] flex-col border-r border-[var(--line-strong)] bg-[var(--surface)] p-5 xl:hidden"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="flex items-center justify-between">
               <ZeroLogo variant="banner" />
@@ -59,20 +61,55 @@ export function MobileNavigation({
                 <X size={19} strokeWidth={2.2} />
               </button>
             </div>
-            <div className="mt-10 flex flex-col">
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={close}
-                  className="border-b border-white/7 py-4 text-lg font-bold tracking-[-0.02em] text-white hover:text-[var(--brand-red-light)]"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-            <p className="mt-auto text-xs leading-5 text-[#777]">
-              Premium FiveM resources, maintained for production servers.
+            <motion.ol
+              className="mt-12 flex flex-col"
+              initial="hidden"
+              animate="shown"
+              variants={{
+                hidden: {},
+                shown: {
+                  transition: { staggerChildren: 0.05, delayChildren: 0.12 },
+                },
+              }}
+            >
+              {links.map((link, index) => {
+                const active =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href);
+                return (
+                  <motion.li
+                    key={link.href}
+                    variants={{
+                      hidden: { opacity: 0, x: -16 },
+                      shown: { opacity: 1, x: 0 },
+                    }}
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={close}
+                      aria-current={active ? "page" : undefined}
+                      className="flex items-baseline gap-4 border-b border-[var(--line)] py-4"
+                    >
+                      <span className="index text-xs">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span
+                        className={
+                          active
+                            ? "font-display mark text-4xl text-white"
+                            : "font-display text-4xl text-[var(--neutral-400)] transition-colors hover:text-white"
+                        }
+                      >
+                        {link.label}
+                      </span>
+                    </Link>
+                  </motion.li>
+                );
+              })}
+            </motion.ol>
+            <p className="note mt-auto">
+              premium fivem resources, maintained for production servers.
             </p>
           </motion.nav>
         </>

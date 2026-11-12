@@ -12,8 +12,7 @@ export function ProductPrice({
   return (
     <span
       className={cn(
-        "font-bold text-white tabular-nums",
-        amount > 0 && "text-[var(--brand-red-light)]",
+        "font-mono font-medium text-[var(--foreground)] tabular-nums",
         className,
       )}
     >

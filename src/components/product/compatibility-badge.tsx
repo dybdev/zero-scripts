@@ -1,14 +1,6 @@
-import { CircleCheck } from "lucide-react";
-
 export function CompatibilityBadge({ label }: { label: string }) {
   return (
-    <span className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-white/8 bg-white/[0.035] px-2.5 text-[11px] font-semibold text-[#c8c8c8]">
-      <CircleCheck
-        size={14}
-        strokeWidth={2.2}
-        className="text-[var(--brand-red-light)]"
-        aria-hidden
-      />
+    <span className="inline-flex min-h-7 items-center rounded-[3px] border border-[var(--line-strong)] px-2 font-mono text-[11px] text-[var(--neutral-200)] lowercase">
       {label}
     </span>
   );
